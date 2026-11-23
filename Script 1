@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro BETA 2.19 | For Delta
+	KingOS Universal Pro v2.20 | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "BETA 2.19"
+local VERSION = "v2.20"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -389,9 +389,9 @@ local function playerHasRoleTool(plr, role)
 			for _, item in ipairs(bag:GetChildren()) do
 				if item:IsA("Tool") then
 					local n = string.lower(item.Name)
-					if role == "murder" and (string.find(n, "knife") or string.find(n, "murder")) then
+					if role == "murder" and (string.find(n, "knife") or string.find(n, "murder") or string.find(n, "blade")) then
 						return true
-					elseif role == "sheriff" and (string.find(n, "gun") or string.find(n, "revolver") or string.find(n, "sheriff")) then
+					elseif role == "sheriff" and (string.find(n, "gun") or string.find(n, "revolver") or string.find(n, "sheriff") or string.find(n, "pistol")) then
 						return true
 					end
 				end
@@ -511,15 +511,23 @@ local function isSafePos(pos)
 	return pos.Y > (Workspace.FallenPartsDestroyHeight + 25) and pos.Magnitude < 4500
 end
 
-local function flingRole(role)
+local function flingTargetPlayer(targetPlr)
 	if flingBusy then
 		notify("Ya hay un fling en proceso")
 		return
 	end
-	local targetPlr, targetChar, targetHrp = findMM2Target(role)
+	if not targetPlr or not targetPlr.Parent or targetPlr == player then
+		notify("Selecciona un jugador válido")
+		return
+	end
+
+	local targetChar = targetPlr.Character
+	local targetHrp = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+	local targetHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
 	local myRoot, myHum = getRoot(), getHum()
-	if not targetPlr or not targetHrp then
-		notify(role == "murder" and "No se encontró Murder" or "No se encontró Sheriff")
+
+	if not targetHrp or not targetHum or targetHum.Health <= 0 then
+		notify("Objetivo sin personaje activo")
 		return
 	end
 	if not myRoot or not myHum then
@@ -528,12 +536,16 @@ local function flingRole(role)
 	end
 
 	flingBusy = true
-	local returnCF = isSafePos(myRoot.Position) and myRoot.CFrame or (targetHrp.CFrame * CFrame.new(0, 4, 5))
+	local returnCF = isSafePos(myRoot.Position) and myRoot.CFrame or (targetHrp.CFrame * CFrame.new(0, 4, 6))
+	local prevSit = myHum.Sit
+	myHum.Sit = false
+
+	-- Mantener colisión activa en partes principales para transferir impulso físico real
 	local prevCollide = {}
 	for _, v in ipairs(player.Character:GetDescendants()) do
 		if v:IsA("BasePart") then
 			prevCollide[v] = v.CanCollide
-			v.CanCollide = false
+			v.CanCollide = true
 		end
 	end
 
@@ -548,12 +560,13 @@ local function flingRole(role)
 		P = 1e9,
 	}, myRoot)
 
-	notify("Fling efectivo a " .. targetPlr.DisplayName .. "...")
+	notify("Fling a " .. targetPlr.DisplayName .. "...")
 	local elapsed = 0
-	local stepIndex = 0
-	while elapsed < 1.6 do
+	local step = 0
+	while elapsed < 1.8 do
 		local dt = RunService.Heartbeat:Wait()
 		elapsed += dt
+
 		if not targetHrp or not targetHrp.Parent or not myRoot or not myRoot.Parent then
 			break
 		end
@@ -561,33 +574,36 @@ local function flingRole(role)
 		if tHum and tHum.Health <= 0 then
 			break
 		end
-
-		-- Evitar salir del mapa o caer al vacío
 		if not isSafePos(targetHrp.Position) then
 			break
 		end
 
-		stepIndex += 1
-		local angle = stepIndex * 1.15
-		local jitter = Vector3.new(math.cos(angle) * 0.95, (stepIndex % 2 == 0 and 0.35 or -0.25), math.sin(angle) * 0.95)
-		local aimPos = targetHrp.Position + jitter
+		step += 1
+		local angle = step * 1.35
+		-- Oscilar ligeramente sobre y alrededor del objetivo manteniendo contacto sólido
+		local offset = Vector3.new(
+			math.cos(angle) * 0.75,
+			(step % 3 == 0 and 0.45 or -0.35),
+			math.sin(angle) * 0.75
+		)
+		local aimPos = targetHrp.Position + offset
 		if not isSafePos(aimPos) then
-			aimPos = Vector3.new(aimPos.X, math.max(aimPos.Y, Workspace.FallenPartsDestroyHeight + 40), aimPos.Z)
+			aimPos = Vector3.new(aimPos.X, math.max(aimPos.Y, Workspace.FallenPartsDestroyHeight + 45), aimPos.Z)
 		end
 
-		myRoot.CFrame = CFrame.new(aimPos, targetHrp.Position) * CFrame.Angles(angle * 3, angle * 5, angle * 2)
+		myRoot.CFrame = CFrame.new(aimPos, targetHrp.Position) * CFrame.Angles(angle * 4, angle * 6, angle * 3)
 
-		local outDir = (targetHrp.Position - myRoot.Position)
-		if outDir.Magnitude < 0.05 then
-			outDir = Vector3.new(math.cos(angle), 0.7, math.sin(angle))
+		local dir = targetHrp.Position - myRoot.Position
+		if dir.Magnitude < 0.05 then
+			dir = Vector3.new(math.cos(angle), 0.65, math.sin(angle))
 		end
-		outDir = outDir.Unit
+		dir = dir.Unit
 
-		local launchVel = (outDir * 175) + Vector3.new(0, 145, 0)
+		local launchVel = (dir * 220) + Vector3.new(0, 180, 0)
 		bv.Velocity = launchVel
-		bav.AngularVelocity = Vector3.new(spinRate * 0.5, spinRate, spinRate * 0.5)
+		bav.AngularVelocity = Vector3.new(spinRate, spinRate, spinRate)
 		myRoot.AssemblyLinearVelocity = launchVel
-		myRoot.AssemblyAngularVelocity = Vector3.new(0, spinRate, 0)
+		myRoot.AssemblyAngularVelocity = Vector3.new(spinRate, spinRate, spinRate)
 	end
 
 	if bv then bv:Destroy() end
@@ -596,7 +612,11 @@ local function flingRole(role)
 	if myRoot and myRoot.Parent then
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
-		myRoot.CFrame = isSafePos(returnCF.Position) and returnCF or (targetHrp and targetHrp.Parent and targetHrp.CFrame * CFrame.new(0, 3, 4) or returnCF)
+		local safeReturn = isSafePos(returnCF.Position) and returnCF or (targetHrp and targetHrp.Parent and targetHrp.CFrame * CFrame.new(0, 3, 5) or returnCF)
+		if not isSafePos(safeReturn.Position) then
+			safeReturn = CFrame.new(0, 12, 0)
+		end
+		myRoot.CFrame = safeReturn
 	end
 
 	for part, oldState in pairs(prevCollide) do
@@ -604,8 +624,21 @@ local function flingRole(role)
 			part.CanCollide = oldState
 		end
 	end
+	if myHum and myHum.Parent then
+		myHum.Sit = prevSit
+	end
+
 	flingBusy = false
-	notify("Fling completado sin salir del mapa")
+	notify("Fling completado")
+end
+
+local function flingRole(role)
+	local targetPlr = findMM2Target(role)
+	if not targetPlr then
+		notify(role == "murder" and "No se encontró Murder" or "No se encontró Sheriff")
+		return
+	end
+	flingTargetPlayer(targetPlr)
 end
 
 local function findDroppedGun()
@@ -1204,6 +1237,117 @@ addButton(mm2Page, "Fling Sherif", function()
 end)
 addButton(mm2Page, "Teleport to Gun", function()
 	teleportToGunAndBack()
+end)
+
+addSection(mm2Page, "Players List (Auto 1s)")
+local selectedPlayer = nil
+local selectedLbl = new("TextLabel", {
+	Size = UDim2.new(1, 0, 0, 24),
+	BackgroundTransparency = 1,
+	Text = "Seleccionado: Ninguno",
+	Font = Enum.Font.GothamBold,
+	TextSize = 12,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	LayoutOrder = nextOrder(),
+}, mm2Page)
+bind(function() selectedLbl.TextColor3 = T.accent end)
+
+local playerListBox = new("ScrollingFrame", {
+	Size = UDim2.new(1, 0, 0, 126),
+	BorderSizePixel = 0,
+	ScrollBarThickness = 3,
+	CanvasSize = UDim2.new(),
+	AutomaticCanvasSize = Enum.AutomaticSize.Y,
+	LayoutOrder = nextOrder(),
+}, mm2Page)
+corner(playerListBox, 10)
+local pListStroke = stroke(playerListBox, 1)
+new("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, playerListBox)
+new("UIPadding", {
+	PaddingTop = UDim.new(0, 6),
+	PaddingBottom = UDim.new(0, 6),
+	PaddingLeft = UDim.new(0, 6),
+	PaddingRight = UDim.new(0, 6),
+}, playerListBox)
+bind(function()
+	playerListBox.BackgroundColor3 = T.bg2
+	playerListBox.ScrollBarImageColor3 = T.accent
+	pListStroke.Color = T.bg3
+end)
+
+local function refreshPlayerListUI()
+	for _, child in ipairs(playerListBox:GetChildren()) do
+		if child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+
+	if selectedPlayer and not selectedPlayer.Parent then
+		selectedPlayer = nil
+	end
+
+	local list = {}
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= player then
+			table.insert(list, plr)
+		end
+	end
+
+	if #list == 0 then
+		selectedLbl.Text = "Seleccionado: Ninguno (sin otros jugadores)"
+		return
+	end
+
+	if not selectedPlayer then
+		selectedPlayer = list[1]
+	end
+
+	selectedLbl.Text = "Seleccionado: " .. selectedPlayer.DisplayName .. " (@" .. selectedPlayer.Name .. ")"
+
+	for _, plr in ipairs(list) do
+		local isSel = (plr == selectedPlayer)
+		local roleTag = ""
+		if playerHasRoleTool(plr, "murder") then
+			roleTag = " [MURDER]"
+		elseif playerHasRoleTool(plr, "sheriff") then
+			roleTag = " [SHERIFF]"
+		end
+
+		local itemBtn = new("TextButton", {
+			Size = UDim2.new(1, 0, 0, 28),
+			Text = plr.DisplayName .. " (@" .. plr.Name .. ")" .. roleTag,
+			Font = isSel and Enum.Font.GothamBold or Enum.Font.GothamMedium,
+			TextSize = 12,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			AutoButtonColor = false,
+			BackgroundColor3 = isSel and T.accent or T.bg3,
+			TextColor3 = isSel and T.onAccent or T.text,
+			LayoutOrder = nextOrder(),
+		}, playerListBox)
+		corner(itemBtn, 7)
+		new("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) }, itemBtn)
+
+		itemBtn.MouseButton1Click:Connect(function()
+			selectedPlayer = plr
+			refreshPlayerListUI()
+		end)
+	end
+end
+
+addButton(mm2Page, "Fling Selected Player", function()
+	if not selectedPlayer or not selectedPlayer.Parent then
+		refreshPlayerListUI()
+		notify("No hay jugador seleccionado")
+		return
+	end
+	flingTargetPlayer(selectedPlayer)
+end)
+
+task.spawn(function()
+	while gui.Parent do
+		refreshPlayerListUI()
+		task.wait(1)
+	end
 end)
 
 -- ---- Themes ----
