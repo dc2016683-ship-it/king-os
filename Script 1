@@ -111,7 +111,7 @@ local I18N = {
 		flingInvalidTarget = "Selecciona un jugador válido",
 		flingNoTargetChar = "Objetivo sin personaje activo",
 		flingNoMyChar = "Tu personaje no está listo",
-		flingStart = "Fling normal a %s...",
+		flingStart = "Fling multi-dirección a %s...",
 		flingDone = "Fling completado",
 		noMurder = "No se encontró Murder",
 		noSheriff = "No se encontró Sheriff",
@@ -145,7 +145,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.22.0: Fling normal directo para Murder, Sheriff y jugadores seleccionados, además de corrección de estabilidad.\n• v2.22: Botones de idioma Español / English en Settings y traducción de interfaz.",
+		versionNotesText = "• v2.22.0: Fling multi-dirección con giro en todos los ejes para Murder, Sheriff y jugadores seleccionados.\n• v2.22: Botones de idioma Español / English en Settings y traducción de interfaz.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -220,7 +220,7 @@ local I18N = {
 		flingInvalidTarget = "Select a valid player",
 		flingNoTargetChar = "Target has no active character",
 		flingNoMyChar = "Your character is not ready",
-		flingStart = "Normal fling on %s...",
+		flingStart = "Multi-angle fling on %s...",
 		flingDone = "Fling completed",
 		noMurder = "Murder not found",
 		noSheriff = "Sheriff not found",
@@ -254,7 +254,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.22.0: Direct normal fling for Murder, Sheriff, and selected players, plus stability fixes.\n• v2.22: Spanish / English language buttons in Settings and UI translation.",
+		versionNotesText = "• v2.22.0: All-direction fling with full-axis high-speed spin for Murder, Sheriff, and selected players.\n• v2.22: Spanish / English language buttons in Settings and UI translation.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -777,8 +777,18 @@ end
 track(Players.PlayerRemoving:Connect(clearEspEntry))
 track(RunService.RenderStepped:Connect(updateMM2Esp))
 
--- ====================== NORMAL FLING ======================
+-- ====================== ALL-DIRECTION SPIN FLING ======================
 local flingBusy = false
+local FLING_DIRS = {
+	Vector3.new(1, 0.75, 0),
+	Vector3.new(-1, 0.75, 0),
+	Vector3.new(0, 0.75, 1),
+	Vector3.new(0, 0.75, -1),
+	Vector3.new(0.8, 0.85, 0.8),
+	Vector3.new(-0.8, 0.85, 0.8),
+	Vector3.new(0.8, 0.85, -0.8),
+	Vector3.new(-0.8, 0.85, -0.8),
+}
 
 local function flingTargetPlayer(targetPlr)
 	if flingBusy then
@@ -817,20 +827,22 @@ local function flingTargetPlayer(targetPlr)
 		end
 	end
 
+	local spinVec = Vector3.new(9e6, 9e6, 9e6)
 	local bv = new("BodyVelocity", {
 		MaxForce = Vector3.new(1e9, 1e9, 1e9),
 		Velocity = Vector3.zero,
 	}, myRoot)
 	local bav = new("BodyAngularVelocity", {
 		MaxTorque = Vector3.new(1e9, 1e9, 1e9),
-		AngularVelocity = Vector3.new(0, 9e5, 0),
+		AngularVelocity = spinVec,
 		P = 1e9,
 	}, myRoot)
 
 	notify(L("flingStart", targetPlr.DisplayName))
 
 	local elapsed = 0
-	while elapsed < 1.35 do
+	local step = 0
+	while elapsed < 1.6 do
 		local dt = RunService.Heartbeat:Wait()
 		elapsed += dt
 
@@ -842,20 +854,24 @@ local function flingTargetPlayer(targetPlr)
 			break
 		end
 
-		local leadPos = targetHrp.Position + (targetHrp.AssemblyLinearVelocity * 0.08)
-		myRoot.CFrame = CFrame.new(leadPos)
+		step += 1
+		local dirPattern = FLING_DIRS[((step - 1) % #FLING_DIRS) + 1]
+		local orbitAngle = step * 1.85
+		local radialOffset = Vector3.new(
+			math.cos(orbitAngle) * 1.35,
+			math.sin(orbitAngle * 1.3) * 1.15,
+			math.sin(orbitAngle) * 1.35
+		)
+		local targetPos = targetHrp.Position + (targetHrp.AssemblyLinearVelocity * 0.08) + radialOffset
 
-		local pushDir = (targetHrp.Position - myRoot.Position)
-		if pushDir.Magnitude < 0.1 then
-			pushDir = targetHrp.CFrame.LookVector + Vector3.new(0, 0.5, 0)
-		end
-		pushDir = pushDir.Unit
+		myRoot.CFrame = CFrame.new(targetPos, targetHrp.Position)
+			* CFrame.Angles(orbitAngle * 7, orbitAngle * 9, orbitAngle * 5)
 
-		local launchVel = (pushDir * 165) + Vector3.new(0, 120, 0)
-		bv.Velocity = launchVel
-		bav.AngularVelocity = Vector3.new(0, 9e5, 0)
-		myRoot.AssemblyLinearVelocity = launchVel
-		myRoot.AssemblyAngularVelocity = Vector3.new(0, 9e5, 0)
+		local flingVel = dirPattern.Unit * 240
+		bv.Velocity = flingVel
+		bav.AngularVelocity = spinVec
+		myRoot.AssemblyLinearVelocity = flingVel
+		myRoot.AssemblyAngularVelocity = spinVec
 	end
 
 	pcall(function() bv:Destroy() end)
