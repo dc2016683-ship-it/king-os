@@ -68,8 +68,8 @@ local I18N = {
 		noClipDesc = "Caminar a través de paredes",
 		airWalk = "Air Walk",
 		airWalkDesc = "Mantiene una plataforma invisible bajo tus pies",
-		spinBot = "Spinbot",
-		spinBotDesc = "Gira el personaje continuamente",
+		spinBot = "FLING spin",
+		spinBotDesc = "Gira a velocidad extrema al activarse",
 		spinSpeed = "Spin Speed",
 		antiRagdoll = "Anti-Ragdoll",
 		antiRagdollDesc = "Evita caídas o estados de ragdoll",
@@ -165,7 +165,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.32: Nuevas opciones en Player (Air Walk, Spinbot, Anti-Ragdoll, Sit, Refresh), World y MM2 (TP y Spectate).\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
+		versionNotesText = "• v2.32: FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -197,8 +197,8 @@ local I18N = {
 		noClipDesc = "Walk through walls",
 		airWalk = "Air Walk",
 		airWalkDesc = "Keeps an invisible platform under your feet",
-		spinBot = "Spinbot",
-		spinBotDesc = "Spins your character continuously",
+		spinBot = "FLING spin",
+		spinBotDesc = "Spins at extreme speed when enabled",
 		spinSpeed = "Spin Speed",
 		antiRagdoll = "Anti-Ragdoll",
 		antiRagdollDesc = "Prevents falling or ragdoll states",
@@ -294,7 +294,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.32: Added Player options (Air Walk, Spinbot, Anti-Ragdoll, Sit, Refresh), World options and MM2 TP & Spectate.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
+		versionNotesText = "• v2.32: FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -591,6 +591,48 @@ local function updateAirWalk()
 	end
 end
 
+-- FLING spin high-velocity angular force
+local FLING_SPIN_MULT = 1928388181818283818181
+local flingSpinBav = nil
+local flingSpinRoot = nil
+
+local function stopFlingSpin()
+	if flingSpinBav then
+		pcall(function() flingSpinBav:Destroy() end)
+		flingSpinBav = nil
+	end
+	if flingSpinRoot and flingSpinRoot.Parent then
+		flingSpinRoot.AssemblyAngularVelocity = Vector3.zero
+	end
+	flingSpinRoot = nil
+end
+
+local function updateFlingSpin()
+	if not S.spinBot or S.fly then
+		stopFlingSpin()
+		return
+	end
+	local root = getRoot()
+	if not root or not root.Parent then
+		stopFlingSpin()
+		return
+	end
+	if flingSpinRoot ~= root or not flingSpinBav or not flingSpinBav.Parent then
+		stopFlingSpin()
+		flingSpinRoot = root
+		flingSpinBav = new("BodyAngularVelocity", {
+			Name = "KingOS_FlingSpin",
+			MaxTorque = Vector3.new(math.huge, math.huge, math.huge),
+			AngularVelocity = Vector3.new(0, FLING_SPIN_MULT * math.max(1, S.spinSpeed), 0),
+			P = math.huge,
+		}, root)
+	else
+		local rate = FLING_SPIN_MULT * math.max(1, S.spinSpeed)
+		flingSpinBav.AngularVelocity = Vector3.new(0, rate, 0)
+		root.AssemblyAngularVelocity = Vector3.new(0, rate, 0)
+	end
+end
+
 track(RunService.Stepped:Connect(function()
 	if S.noclip or S.fly then
 		local c = player.Character
@@ -604,6 +646,7 @@ track(RunService.Stepped:Connect(function()
 		end
 	end
 	updateAirWalk()
+	updateFlingSpin()
 end))
 
 track(UserInputService.JumpRequest:Connect(function()
@@ -646,11 +689,13 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
-	-- Spinbot
+	-- FLING spin: rotación a velocidad 1928388181818283818181
 	if S.spinBot and not S.fly then
 		local root = getRoot()
 		if root then
-			root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(S.spinSpeed * 20) * math.min(dt, 0.05), 0)
+			local angle = (FLING_SPIN_MULT * math.max(1, S.spinSpeed)) % (math.pi * 2)
+			root.CFrame = root.CFrame * CFrame.Angles(0, angle, 0)
+			root.AssemblyAngularVelocity = Vector3.new(0, FLING_SPIN_MULT * math.max(1, S.spinSpeed), 0)
 		end
 	end
 
@@ -1594,8 +1639,18 @@ addToggle(playerPage, "airWalk", "airWalkDesc", false, function(v)
 end)
 addToggle(playerPage, "spinBot", "spinBotDesc", false, function(v)
 	S.spinBot = v
+	if v then
+		updateFlingSpin()
+	else
+		stopFlingSpin()
+	end
 end)
-addSlider(playerPage, "spinSpeed", 1, 100, S.spinSpeed, function(v) S.spinSpeed = v end)
+addSlider(playerPage, "spinSpeed", 1, 100, S.spinSpeed, function(v)
+	S.spinSpeed = v
+	if S.spinBot then
+		updateFlingSpin()
+	end
+end)
 addToggle(playerPage, "antiRagdoll", "antiRagdollDesc", false, function(v)
 	S.antiRagdoll = v
 	local hum = getHum()
@@ -1610,11 +1665,15 @@ local flyPad
 addToggle(playerPage, "fly", "flyDesc", false, function(v)
 	S.fly = v
 	if v then
+		stopFlingSpin()
 		if not startFly() then
 			notify(L("flyNoChar"))
 		end
 	else
 		stopFly()
+		if S.spinBot then
+			updateFlingSpin()
+		end
 	end
 	if flyPad then flyPad.Visible = v end
 end)
@@ -2185,6 +2244,7 @@ end))
 
 -- ====================== UNLOAD ======================
 unload = function()
+	stopFlingSpin()
 	stopSpectate(true)
 	S.fly = false
 	stopFly()
