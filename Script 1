@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal DeLuX Pro (2.32) | For Delta
+	KingOS Universal vPro3 | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -30,7 +30,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "DeLuX Pro (2.32)"
+local VERSION = "vPro3"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -131,6 +131,9 @@ local I18N = {
 		copyTargetsToast = "Copiado: %s",
 		openFlingList = "Abrir lista de fling",
 		openFlingListToast = "Abriendo lista de fling...",
+		autoCollectGun = "Auto Collect Gun",
+		autoCollectGunDesc = "Recoge la pistola tirada y se desactiva solo",
+		autoGunCollected = "¡Gun recogida! Auto Collect desactivado",
 		tpGun = "Teleport to Gun",
 
 		flingNoMyChar = "Tu personaje no está listo",
@@ -163,7 +166,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios vía API del juego.",
+		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios.\n• vPro3: Auto Collect Gun automático con auto-desactivado al recoger la pistola.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -256,6 +259,9 @@ local I18N = {
 		copyTargetsToast = "Copied: %s",
 		openFlingList = "Open Fling List",
 		openFlingListToast = "Opening fling list...",
+		autoCollectGun = "Auto Collect Gun",
+		autoCollectGunDesc = "Collects dropped gun and turns off automatically",
+		autoGunCollected = "Gun collected! Auto Collect disabled",
 		tpGun = "Teleport to Gun",
 
 		flingNoMyChar = "Your character is not ready",
@@ -288,7 +294,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and game API script user count.",
+		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and user count.\n• vPro3: Automatic Gun Collect with auto-disable once picked up.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -464,12 +470,6 @@ if not pingRemote then
 	end)
 end
 
-local function markUserActive(plr)
-	if plr and plr ~= player then
-		seenApiUsers[plr.UserId] = os.clock()
-	end
-end
-
 if pingRemote and pingRemote:IsA("RemoteEvent") then
 	track(pingRemote.OnClientEvent:Connect(function(senderUserId)
 		if type(senderUserId) == "number" and senderUserId ~= player.UserId then
@@ -545,6 +545,7 @@ local S = {
 	espMurder = false,
 	espSheriff = false,
 	espInnocent = false,
+	autoCollectGun = false,
 }
 
 local function getHum()
@@ -883,7 +884,7 @@ end))
 
 -- ====================== MM2 LOGIC ======================
 local function playerHasRoleTool(plr, role)
-	if plr == player then return false end
+	if not plr then return false end
 	local containers = { plr:FindFirstChild("Backpack"), plr.Character }
 	for _, bag in ipairs(containers) do
 		if bag then
@@ -1025,7 +1026,7 @@ local function findDroppedGun()
 			return obj
 		elseif obj:IsA("Tool") and (string.lower(obj.Name) == "gun" or string.find(string.lower(obj.Name), "gun")) then
 			local handle = obj:FindFirstChild("Handle")
-			if handle and handle:IsA("BasePart") then
+			if handle and handle:IsA("BasePart") and not Players:GetPlayerFromCharacter(obj.Parent) then
 				return handle
 			end
 		end
@@ -1033,18 +1034,23 @@ local function findDroppedGun()
 	return nil
 end
 
+local autoGunToggleApi = nil
 local tpGunBusy = false
-local function teleportToGunAndBack()
-	if tpGunBusy then return end
+local function teleportToGunAndBack(silentMissing)
+	if tpGunBusy then return false end
 	local gunPart = findDroppedGun()
 	local myRoot = getRoot()
 	if not gunPart then
-		notify(L("noGun"))
-		return
+		if not silentMissing then
+			notify(L("noGun"))
+		end
+		return false
 	end
 	if not myRoot then
-		notify(L("flingNoMyChar"))
-		return
+		if not silentMissing then
+			notify(L("flingNoMyChar"))
+		end
+		return false
 	end
 
 	tpGunBusy = true
@@ -1053,7 +1059,9 @@ local function teleportToGunAndBack()
 	myRoot.Anchored = false
 	myRoot.AssemblyLinearVelocity = Vector3.zero
 	myRoot.CFrame = gunPart.CFrame + Vector3.new(0, 1.5, 0)
-	notify(L("pickingGun"))
+	if not silentMissing then
+		notify(L("pickingGun"))
+	end
 
 	task.wait(0.35)
 	if myRoot and myRoot.Parent then
@@ -1062,7 +1070,10 @@ local function teleportToGunAndBack()
 		myRoot.Anchored = wasAnchored
 	end
 	tpGunBusy = false
-	notify(L("backToPos"))
+	if not silentMissing then
+		notify(L("backToPos"))
+	end
+	return true
 end
 
 -- ====================== MAIN PANEL ======================
@@ -1855,14 +1866,38 @@ addButton(mm2Page, "openFlingList", function()
 		end)
 	end)
 end)
+autoGunToggleApi = addToggle(mm2Page, "autoCollectGun", "autoCollectGunDesc", false, function(v)
+	S.autoCollectGun = v
+end)
 addButton(mm2Page, "tpGun", function()
-	teleportToGunAndBack()
+	teleportToGunAndBack(false)
 end)
 
 task.spawn(function()
 	while gui.Parent do
 		refreshRoleInfoUI()
-		task.wait(1)
+		if S.autoCollectGun and not tpGunBusy then
+			if playerHasRoleTool(player, "sheriff") then
+				S.autoCollectGun = false
+				if autoGunToggleApi then
+					autoGunToggleApi.sync(false)
+				end
+				notify(L("autoGunCollected"))
+			else
+				local gunPart = findDroppedGun()
+				if gunPart then
+					local collected = teleportToGunAndBack(true)
+					if collected and (playerHasRoleTool(player, "sheriff") or not findDroppedGun()) then
+						S.autoCollectGun = false
+						if autoGunToggleApi then
+							autoGunToggleApi.sync(false)
+						end
+						notify(L("autoGunCollected"))
+					end
+				end
+			end
+		end
+		task.wait(0.35)
 	end
 end)
 
@@ -2024,7 +2059,7 @@ bind(function()
 end)
 
 addSection(settingsPage, "secVersionNotes")
-local notesRow = row(settingsPage, 206)
+local notesRow = row(settingsPage, 232)
 local notesLbl = new("TextLabel", {
 	Size = UDim2.new(1, -24, 1, -16),
 	Position = UDim2.new(0, 12, 0, 8),
@@ -2208,6 +2243,7 @@ unload = function()
 	S.fly = false
 	stopFly()
 	S.velEditOn = false
+	S.autoCollectGun = false
 	S.noclip = false
 	S.airWalk = false
 	S.spinBot = false
