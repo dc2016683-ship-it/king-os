@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro v2.4 | For Delta
+	KingOS Universal Pro BETA 2.19 | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "v2.4"
+local VERSION = "BETA 2.19"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -507,6 +507,10 @@ track(Players.PlayerRemoving:Connect(clearEspEntry))
 track(RunService.RenderStepped:Connect(updateMM2Esp))
 
 local flingBusy = false
+local function isSafePos(pos)
+	return pos.Y > (Workspace.FallenPartsDestroyHeight + 25) and pos.Magnitude < 4500
+end
+
 local function flingRole(role)
 	if flingBusy then
 		notify("Ya hay un fling en proceso")
@@ -524,7 +528,7 @@ local function flingRole(role)
 	end
 
 	flingBusy = true
-	local returnCF = myRoot.CFrame
+	local returnCF = isSafePos(myRoot.Position) and myRoot.CFrame or (targetHrp.CFrame * CFrame.new(0, 4, 5))
 	local prevCollide = {}
 	for _, v in ipairs(player.Character:GetDescendants()) do
 		if v:IsA("BasePart") then
@@ -533,21 +537,21 @@ local function flingRole(role)
 		end
 	end
 
-	local spinSpeed = 1e6
+	local spinRate = 1e6
 	local bv = new("BodyVelocity", {
 		MaxForce = Vector3.new(1e9, 1e9, 1e9),
 		Velocity = Vector3.zero,
 	}, myRoot)
 	local bav = new("BodyAngularVelocity", {
 		MaxTorque = Vector3.new(1e9, 1e9, 1e9),
-		AngularVelocity = Vector3.new(0, spinSpeed, 0),
+		AngularVelocity = Vector3.new(0, spinRate, 0),
 		P = 1e9,
 	}, myRoot)
 
-	notify("Flinging " .. targetPlr.DisplayName .. "...")
+	notify("Fling efectivo a " .. targetPlr.DisplayName .. "...")
 	local elapsed = 0
-	local orbitAngle = 0
-	while elapsed < 1.5 do
+	local stepIndex = 0
+	while elapsed < 1.6 do
 		local dt = RunService.Heartbeat:Wait()
 		elapsed += dt
 		if not targetHrp or not targetHrp.Parent or not myRoot or not myRoot.Parent then
@@ -558,23 +562,32 @@ local function flingRole(role)
 			break
 		end
 
-		orbitAngle += dt * 28
-		local radius = 2.1
-		local offset = Vector3.new(math.cos(orbitAngle) * radius, math.sin(orbitAngle * 0.5) * 0.6, math.sin(orbitAngle) * radius)
-		local orbitPos = targetHrp.Position + offset
-		myRoot.CFrame = CFrame.new(orbitPos, targetHrp.Position) * CFrame.Angles(0, orbitAngle * 4, 0)
-
-		local pushDir = (targetHrp.Position - myRoot.Position)
-		if pushDir.Magnitude > 0.01 then
-			pushDir = pushDir.Unit
-		else
-			pushDir = Vector3.new(1, 0, 0)
+		-- Evitar salir del mapa o caer al vacío
+		if not isSafePos(targetHrp.Position) then
+			break
 		end
-		local launchVel = (pushDir * 140) + Vector3.new(0, 120, 0)
+
+		stepIndex += 1
+		local angle = stepIndex * 1.15
+		local jitter = Vector3.new(math.cos(angle) * 0.95, (stepIndex % 2 == 0 and 0.35 or -0.25), math.sin(angle) * 0.95)
+		local aimPos = targetHrp.Position + jitter
+		if not isSafePos(aimPos) then
+			aimPos = Vector3.new(aimPos.X, math.max(aimPos.Y, Workspace.FallenPartsDestroyHeight + 40), aimPos.Z)
+		end
+
+		myRoot.CFrame = CFrame.new(aimPos, targetHrp.Position) * CFrame.Angles(angle * 3, angle * 5, angle * 2)
+
+		local outDir = (targetHrp.Position - myRoot.Position)
+		if outDir.Magnitude < 0.05 then
+			outDir = Vector3.new(math.cos(angle), 0.7, math.sin(angle))
+		end
+		outDir = outDir.Unit
+
+		local launchVel = (outDir * 175) + Vector3.new(0, 145, 0)
 		bv.Velocity = launchVel
-		bav.AngularVelocity = Vector3.new(spinSpeed * 0.25, spinSpeed, spinSpeed * 0.25)
+		bav.AngularVelocity = Vector3.new(spinRate * 0.5, spinRate, spinRate * 0.5)
 		myRoot.AssemblyLinearVelocity = launchVel
-		myRoot.AssemblyAngularVelocity = Vector3.new(0, spinSpeed, 0)
+		myRoot.AssemblyAngularVelocity = Vector3.new(0, spinRate, 0)
 	end
 
 	if bv then bv:Destroy() end
@@ -583,7 +596,7 @@ local function flingRole(role)
 	if myRoot and myRoot.Parent then
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
-		myRoot.CFrame = returnCF
+		myRoot.CFrame = isSafePos(returnCF.Position) and returnCF or (targetHrp and targetHrp.Parent and targetHrp.CFrame * CFrame.new(0, 3, 4) or returnCF)
 	end
 
 	for part, oldState in pairs(prevCollide) do
@@ -592,7 +605,7 @@ local function flingRole(role)
 		end
 	end
 	flingBusy = false
-	notify("Fling terminado")
+	notify("Fling completado sin salir del mapa")
 end
 
 local function findDroppedGun()
@@ -1278,19 +1291,33 @@ addButton(settingsPage, "Unload KingOS", function()
 end, true)
 
 addSection(settingsPage, "About")
-local infoRow = row(settingsPage, 92)
-local infoLbl = new("TextLabel", {
-	Size = UDim2.new(1, -24, 1, -16),
+local infoRow = row(settingsPage, 128)
+local verBigLbl = new("TextLabel", {
+	Size = UDim2.new(1, -24, 0, 34),
 	Position = UDim2.new(0, 12, 0, 8),
 	BackgroundTransparency = 1,
-	Text = "KingOS Universal Pro " .. VERSION .. "\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
+	Text = "version : " .. VERSION,
+	Font = Enum.Font.GothamBlack,
+	TextSize = 26,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Center,
+	TextScaled = true,
+}, infoRow)
+local infoLbl = new("TextLabel", {
+	Size = UDim2.new(1, -24, 0, 74),
+	Position = UDim2.new(0, 12, 0, 46),
+	BackgroundTransparency = 1,
+	Text = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 	Font = Enum.Font.Gotham,
 	TextSize = 12,
 	TextWrapped = true,
 	TextXAlignment = Enum.TextXAlignment.Left,
 	TextYAlignment = Enum.TextYAlignment.Top,
 }, infoRow)
-bind(function() infoLbl.TextColor3 = T.gray end)
+bind(function()
+	verBigLbl.TextColor3 = T.accent
+	infoLbl.TextColor3 = T.gray
+end)
 
 -- ====================== FLY UP/DOWN PAD (mobile) ======================
 flyPad = new("Frame", {
@@ -1367,7 +1394,6 @@ bind(function()
 	floatStroke.Color = T.accent
 end)
 
--- Arrastrable en móvil/PC sin interferir con el toque para abrir/cerrar
 do
 	local btnDragging, btnMoved = false, false
 	local btnDragStart, btnStartPos = nil, nil
