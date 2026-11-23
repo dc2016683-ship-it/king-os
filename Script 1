@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro v2.20 | For Delta
+	KingOS Universal Pro v2.21 | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "v2.20"
+local VERSION = "v2.21"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -165,6 +165,7 @@ local S = {
 	rainbow = false,
 	espMurder = false,
 	espSheriff = false,
+	espInnocent = false,
 }
 
 local function getHum()
@@ -431,7 +432,7 @@ local function clearAllEsp()
 end
 
 local function updateMM2Esp()
-	if not S.espMurder and not S.espSheriff then
+	if not S.espMurder and not S.espSheriff and not S.espInnocent then
 		clearAllEsp()
 		return
 	end
@@ -443,21 +444,32 @@ local function updateMM2Esp()
 			continue
 		end
 
-		local isMurder = S.espMurder and playerHasRoleTool(plr, "murder")
-		local isSheriff = S.espSheriff and playerHasRoleTool(plr, "sheriff")
+		local hasMurder = playerHasRoleTool(plr, "murder")
+		local hasSheriff = playerHasRoleTool(plr, "sheriff")
+		local isMurder = S.espMurder and hasMurder
+		local isSheriff = S.espSheriff and hasSheriff
+		local isInnocent = S.espInnocent and (not hasMurder and not hasSheriff)
+
 		local char = plr.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 
-		if not (isMurder or isSheriff) or not char or not hrp or not hum or hum.Health <= 0 then
+		if not (isMurder or isSheriff or isInnocent) or not char or not hrp or not hum or hum.Health <= 0 then
 			clearEspEntry(plr)
 			continue
 		end
 
-		local col = isMurder and Color3.fromRGB(240, 45, 65) or Color3.fromRGB(45, 130, 255)
-		local tagText = isMurder and "MURDER" or "SHERIFF"
+		local col = Color3.fromRGB(50, 220, 110)
+		local tagText = "INNOCENT"
 		if isMurder and isSheriff then
+			col = Color3.fromRGB(240, 45, 65)
 			tagText = "MURDER / SHERIFF"
+		elseif isMurder then
+			col = Color3.fromRGB(240, 45, 65)
+			tagText = "MURDER"
+		elseif isSheriff then
+			col = Color3.fromRGB(45, 130, 255)
+			tagText = "SHERIFF"
 		end
 
 		local entry = espObjects[plr]
@@ -476,7 +488,7 @@ local function updateMM2Esp()
 			local bb = new("BillboardGui", {
 				Name = "KingOS_Tag",
 				Adornee = hrp,
-				Size = UDim2.new(0, 140, 0, 34),
+				Size = UDim2.new(0, 150, 0, 34),
 				StudsOffset = Vector3.new(0, 3.2, 0),
 				AlwaysOnTop = true,
 			}, gui)
@@ -540,7 +552,6 @@ local function flingTargetPlayer(targetPlr)
 	local prevSit = myHum.Sit
 	myHum.Sit = false
 
-	-- Mantener colisión activa en partes principales para transferir impulso físico real
 	local prevCollide = {}
 	for _, v in ipairs(player.Character:GetDescendants()) do
 		if v:IsA("BasePart") then
@@ -560,10 +571,10 @@ local function flingTargetPlayer(targetPlr)
 		P = 1e9,
 	}, myRoot)
 
-	notify("Fling a " .. targetPlr.DisplayName .. "...")
+	notify("Fling v2.21 a " .. targetPlr.DisplayName .. "...")
 	local elapsed = 0
 	local step = 0
-	while elapsed < 1.8 do
+	while elapsed < 1.85 do
 		local dt = RunService.Heartbeat:Wait()
 		elapsed += dt
 
@@ -579,12 +590,11 @@ local function flingTargetPlayer(targetPlr)
 		end
 
 		step += 1
-		local angle = step * 1.35
-		-- Oscilar ligeramente sobre y alrededor del objetivo manteniendo contacto sólido
+		local angle = step * 1.4
 		local offset = Vector3.new(
-			math.cos(angle) * 0.75,
-			(step % 3 == 0 and 0.45 or -0.35),
-			math.sin(angle) * 0.75
+			math.cos(angle) * 0.7,
+			(step % 2 == 0 and 0.35 or -0.3),
+			math.sin(angle) * 0.7
 		)
 		local aimPos = targetHrp.Position + offset
 		if not isSafePos(aimPos) then
@@ -595,11 +605,11 @@ local function flingTargetPlayer(targetPlr)
 
 		local dir = targetHrp.Position - myRoot.Position
 		if dir.Magnitude < 0.05 then
-			dir = Vector3.new(math.cos(angle), 0.65, math.sin(angle))
+			dir = Vector3.new(math.cos(angle), 0.7, math.sin(angle))
 		end
 		dir = dir.Unit
 
-		local launchVel = (dir * 220) + Vector3.new(0, 180, 0)
+		local launchVel = (dir * 235) + Vector3.new(0, 190, 0)
 		bv.Velocity = launchVel
 		bav.AngularVelocity = Vector3.new(spinRate, spinRate, spinRate)
 		myRoot.AssemblyLinearVelocity = launchVel
@@ -629,7 +639,7 @@ local function flingTargetPlayer(targetPlr)
 	end
 
 	flingBusy = false
-	notify("Fling completado")
+	notify("Fling completado sin salir del mapa")
 end
 
 local function flingRole(role)
@@ -1220,13 +1230,17 @@ addButton(worldPage, "Reset FOV", function()
 end)
 
 -- ---- MM2 ----
-addSection(mm2Page, "Murder & Sheriff")
+addSection(mm2Page, "Murder, Sheriff & Innocent")
 addToggle(mm2Page, "ESP MURDER", "Resalta al jugador que tiene el cuchillo", false, function(v)
 	S.espMurder = v
 	updateMM2Esp()
 end)
 addToggle(mm2Page, "ESP SHERIF", "Resalta al jugador que tiene el arma", false, function(v)
 	S.espSheriff = v
+	updateMM2Esp()
+end)
+addToggle(mm2Page, "ESP INNOCENT", "Resalta a los jugadores inocentes", false, function(v)
+	S.espInnocent = v
 	updateMM2Esp()
 end)
 addButton(mm2Page, "Fling Murder", function()
@@ -1306,7 +1320,7 @@ local function refreshPlayerListUI()
 
 	for _, plr in ipairs(list) do
 		local isSel = (plr == selectedPlayer)
-		local roleTag = ""
+		local roleTag = " [INNOCENT]"
 		if playerHasRoleTool(plr, "murder") then
 			roleTag = " [MURDER]"
 		elseif playerHasRoleTool(plr, "sheriff") then
@@ -1626,6 +1640,7 @@ unload = function()
 	restoreNoclip()
 	S.espMurder = false
 	S.espSheriff = false
+	S.espInnocent = false
 	clearAllEsp()
 	S.fullbright, S.noFog, S.fov = false, false, nil
 	restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows", "FogEnd" })
