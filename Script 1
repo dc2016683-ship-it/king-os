@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro v2.32 | For Delta
+	KingOS Universal Pro 2 (2.23) | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "v2.32"
+local VERSION = "PRO 2 (2.23)"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -165,7 +165,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.32: FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
+		versionNotesText = "• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -294,7 +294,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.32: FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
+		versionNotesText = "• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
