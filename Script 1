@@ -150,7 +150,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• PRO (2.33): Detección de Murder y Sheriff en MM2, botón Abrir lista de fling y botón Invisibilidad en Player.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.",
+		versionNotesText = "• PRO (2.33): Fix en Fly para evitar descenso automático, detección de Murder/Sheriff y botón Invisibilidad.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -264,7 +264,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• PRO (2.33): Murder & Sheriff role detection in MM2, Open Fling List button, and Invisibility button in Player.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.",
+		versionNotesText = "• PRO (2.33): Fly drift fix to stop slow downward movement, Murder/Sheriff detection, and Invisibility button.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -637,6 +637,7 @@ local function stopFly()
 	end
 	if root and root.Parent then
 		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
 	end
 	if not S.noclip then
 		restoreNoclip()
@@ -648,6 +649,7 @@ local function startFly()
 	if not root or not hum then return false end
 	hum.PlatformStand = true
 	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
 	return true
 end
 
@@ -658,11 +660,13 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
-	-- Vuelo fluido controlado por CFrame + velocidad limpia
+	-- Vuelo estable sin deslizamiento ni caída automática cuando está quieto
 	if S.fly then
 		local root, hum = getRoot(), getHum()
 		if not (root and hum and cam) then return end
 		hum.PlatformStand = true
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
 
 		local dir = Vector3.zero
 		if hum.MoveDirection.Magnitude > 0 then
@@ -675,19 +679,25 @@ track(RunService.RenderStepped:Connect(function(dt)
 		if UserInputService:IsKeyDown(Enum.KeyCode.Q) or UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or flyDown then
 			dir -= Vector3.new(0, 1, 0)
 		end
+
 		if dir.Magnitude > 0 then
 			dir = dir.Unit
+			local nextPos = root.Position + dir * (S.flySpeed * math.min(dt, 0.05))
+			root.CFrame = CFrame.lookAt(nextPos, nextPos + cam.CFrame.LookVector)
+		else
+			root.CFrame = CFrame.lookAt(root.Position, root.Position + cam.CFrame.LookVector)
 		end
-
-		local nextPos = root.Position + dir * (S.flySpeed * math.min(dt, 0.05))
-		root.AssemblyLinearVelocity = Vector3.zero
-		root.AssemblyAngularVelocity = Vector3.zero
-		root.CFrame = CFrame.lookAt(nextPos, nextPos + cam.CFrame.LookVector)
 	end
 end))
 
 track(RunService.Heartbeat:Connect(function()
-	local hum = getHum()
+	local hum, root = getHum(), getRoot()
+	if S.fly and hum and root then
+		hum.PlatformStand = true
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
+	end
+
 	if hum then
 		if S.speedOn then
 			hum.WalkSpeed = S.speed
