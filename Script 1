@@ -2,7 +2,7 @@
 	KingOS Universal Pro v2.22.2 Beta | For Delta
 	OWN GAME BY KING OS
 
-	Tabs: Player, World, MM2, Guerra Subterranea, Themes, Settings
+	Tabs: Player, World, MM2, Themes, Settings
 	Hide/show the panel: RightShift or the round "K" button
 ]]
 
@@ -52,7 +52,6 @@ local I18N = {
 		tabPlayer = "Player",
 		tabWorld = "World",
 		tabMM2 = "MM2",
-		tabSubWar = "Guerra Subterranea 🗡️",
 		tabThemes = "Themes",
 		tabSettings = "Settings",
 
@@ -108,18 +107,6 @@ local I18N = {
 		tagSheriff = " [SHERIFF]",
 		flingSelected = "Fling Jugador Seleccionado",
 
-		secSubWar = "Guerra Subterránea 🗡️",
-		subWarStatus = "Estado del Juego: %s",
-		subWarDetected = "Detectado Place %d (Modo Subterráneo Listo)",
-		subWarOtherPlace = "Place actual: %d (Modo Subterráneo Libre)",
-		underGroundMode = "Ir Debajo del Suelo",
-		underGroundDesc = "Muévete bajo el mapa con vista libre y menor exposición",
-		underSpeed = "Velocidad Bajo Suelo",
-		underDepth = "Profundidad Bajo Suelo",
-		appearBtn = "Aparecer",
-		subWarEnterToast = "Modo subterráneo activo: muévete libremente",
-		subWarAppearToast = "Volviste a aparecer en la superficie",
-
 		flingBusy = "Ya hay un fling en proceso",
 		flingInvalidTarget = "Selecciona un jugador válido",
 		flingNoTargetChar = "Objetivo sin personaje activo",
@@ -158,7 +145,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.22.2 Beta: Velocidad ajustable bajo el suelo, desplazamiento fluido con vista libre del mapa y Fly más estable.\n• v2.22.1 Beta: Pestaña Guerra Subterránea 🗡️ con modo bajo suelo y botón Aparecer.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
+		versionNotesText = "• v2.22.2 Beta: Desplazamiento fluido y Fly más estable.\n• v2.22.1 Beta: Mejoras de estabilidad y rendimiento general.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -174,7 +161,6 @@ local I18N = {
 		tabPlayer = "Player",
 		tabWorld = "World",
 		tabMM2 = "MM2",
-		tabSubWar = "Underground War 🗡️",
 		tabThemes = "Themes",
 		tabSettings = "Settings",
 
@@ -230,18 +216,6 @@ local I18N = {
 		tagSheriff = " [SHERIFF]",
 		flingSelected = "Fling Selected Player",
 
-		secSubWar = "Underground War 🗡️",
-		subWarStatus = "Game Status: %s",
-		subWarDetected = "Detected Place %d (Underground Mode Ready)",
-		subWarOtherPlace = "Current Place: %d (Free Underground Mode)",
-		underGroundMode = "Go Underground",
-		underGroundDesc = "Move beneath the map with clear view and lower exposure",
-		underSpeed = "Underground Speed",
-		underDepth = "Underground Depth",
-		appearBtn = "Appear",
-		subWarEnterToast = "Underground mode active: move freely",
-		subWarAppearToast = "Reappeared on the surface",
-
 		flingBusy = "A fling is already in progress",
 		flingInvalidTarget = "Select a valid player",
 		flingNoTargetChar = "Target has no active character",
@@ -280,7 +254,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.22.2 Beta: Adjustable underground speed, smooth free movement with clear map view, and steadier Fly.\n• v2.22.1 Beta: Underground War 🗡️ tab with underground mode and Appear button.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
+		versionNotesText = "• v2.22.2 Beta: Smooth movement and steadier Fly.\n• v2.22.1 Beta: Stability and overall performance improvements.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -451,14 +425,7 @@ local S = {
 	espMurder = false,
 	espSheriff = false,
 	espInnocent = false,
-	underGround = false,
-	underSpeed = 32,
-	underDepth = 12,
 }
-
-local function isTargetPlace16Or17()
-	return game.PlaceId == 16 or game.PlaceId == 17
-end
 
 local function getHum()
 	local c = player.Character
@@ -558,96 +525,8 @@ local function restoreNoclip()
 	table.clear(noclipChanged)
 end
 
--- ====================== GUERRA SUBTERRANEA LOGIC ======================
-local underGroundToggleApi = nil
-local savedSurfacePos = nil
-local underAnchorY = nil
-local selfTranspSaved = setmetatable({}, { __mode = "k" })
-
-local function applySelfClearView(active)
-	local c = player.Character
-	if not c then return end
-	if active then
-		for _, v in ipairs(c:GetDescendants()) do
-			if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
-				if selfTranspSaved[v] == nil then
-					selfTranspSaved[v] = v.LocalTransparencyModifier
-				end
-				-- Vista clara para ti mientras estás bajo el suelo
-				v.LocalTransparencyModifier = 0.45
-			end
-		end
-	else
-		for part, prevMod in pairs(selfTranspSaved) do
-			if part and part.Parent then
-				part.LocalTransparencyModifier = prevMod
-			end
-		end
-		table.clear(selfTranspSaved)
-	end
-end
-
-local function computeGroundY(pos)
-	local rayParams = RaycastParams.new()
-	rayParams.FilterType = Enum.RaycastFilterType.Exclude
-	if player.Character then
-		rayParams.FilterDescendantsInstances = { player.Character }
-	end
-	local hit = Workspace:Raycast(pos + Vector3.new(0, 35, 0), Vector3.new(0, -160, 0), rayParams)
-	return hit and hit.Position.Y or pos.Y
-end
-
-local function enterUnderground()
-	local root, hum = getRoot(), getHum()
-	if not root or not hum then
-		notify(L("flyNoChar"))
-		return false
-	end
-
-	if not savedSurfacePos then
-		savedSurfacePos = root.Position
-	end
-
-	local groundY = computeGroundY(root.Position)
-	underAnchorY = groundY - math.max(5, S.underDepth)
-
-	hum.PlatformStand = false
-	root.AssemblyLinearVelocity = Vector3.zero
-	root.AssemblyAngularVelocity = Vector3.zero
-	root.CFrame = CFrame.new(root.Position.X, underAnchorY, root.Position.Z) * (root.CFrame - root.CFrame.Position)
-	applySelfClearView(true)
-	return true
-end
-
-local function appearFromUnderground(silent)
-	S.underGround = false
-	underAnchorY = nil
-	applySelfClearView(false)
-
-	local root, hum = getRoot(), getHum()
-	if root and hum then
-		hum.PlatformStand = false
-		local targetPos = savedSurfacePos
-		if not targetPos then
-			local gY = computeGroundY(root.Position)
-			targetPos = Vector3.new(root.Position.X, gY + 3.5, root.Position.Z)
-		end
-		root.AssemblyLinearVelocity = Vector3.zero
-		root.AssemblyAngularVelocity = Vector3.zero
-		root.CFrame = CFrame.new(targetPos.X, targetPos.Y + 1.5, targetPos.Z)
-	end
-	savedSurfacePos = nil
-
-	if not S.noclip then
-		restoreNoclip()
-	end
-	if not silent then
-		notify(L("subWarAppearToast"))
-	end
-end
-
 track(RunService.Stepped:Connect(function()
-	if S.noclip or S.underGround or S.fly then
+	if S.noclip or S.fly then
 		local c = player.Character
 		if c then
 			for _, v in ipairs(c:GetDescendants()) do
@@ -680,7 +559,7 @@ local function stopFly()
 	if root and root.Parent then
 		root.AssemblyLinearVelocity = Vector3.zero
 	end
-	if not S.noclip and not S.underGround then
+	if not S.noclip then
 		restoreNoclip()
 	end
 end
@@ -698,53 +577,6 @@ track(RunService.RenderStepped:Connect(function(dt)
 
 	if S.fov and cam then
 		cam.FieldOfView = S.fov
-	end
-
-	-- Movimiento fluido bajo el suelo con control de velocidad
-	if S.underGround then
-		local root, hum = getRoot(), getHum()
-		if root and hum and cam then
-			if not underAnchorY then
-				underAnchorY = computeGroundY(root.Position) - math.max(5, S.underDepth)
-			end
-
-			local moveDir = Vector3.zero
-			if hum.MoveDirection.Magnitude > 0 then
-				local flatLook = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
-				if flatLook.Magnitude < 1e-4 then
-					flatLook = Vector3.new(0, 0, -1)
-				else
-					flatLook = flatLook.Unit
-				end
-				local flatRight = Vector3.new(cam.CFrame.RightVector.X, 0, cam.CFrame.RightVector.Z)
-				if flatRight.Magnitude < 1e-4 then
-					flatRight = Vector3.new(1, 0, 0)
-				else
-					flatRight = flatRight.Unit
-				end
-				local rel = cam.CFrame:VectorToObjectSpace(hum.MoveDirection)
-				moveDir = flatLook * (-rel.Z) + flatRight * rel.X
-				if moveDir.Magnitude > 0 then
-					moveDir = moveDir.Unit
-				end
-			end
-
-			local stepDist = moveDir * (S.underSpeed * math.min(dt, 0.05))
-			local nextX = root.Position.X + stepDist.X
-			local nextZ = root.Position.Z + stepDist.Z
-			local nextY = root.Position.Y + (underAnchorY - root.Position.Y) * math.min(1, dt * 12)
-
-			local lookFlat = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
-			local posVec = Vector3.new(nextX, nextY, nextZ)
-			local targetCF = (lookFlat.Magnitude > 1e-4)
-				and CFrame.lookAt(posVec, posVec + lookFlat.Unit)
-				or (CFrame.new(posVec) * (root.CFrame - root.CFrame.Position))
-
-			root.AssemblyLinearVelocity = Vector3.zero
-			root.AssemblyAngularVelocity = Vector3.zero
-			root.CFrame = targetCF
-			applySelfClearView(true)
-		end
 	end
 
 	-- Vuelo fluido controlado por CFrame + velocidad limpia
@@ -1586,7 +1418,6 @@ end
 local playerPage = createPage("Player", "👤", "tabPlayer")
 local worldPage = createPage("World", "🌍", "tabWorld")
 local mm2Page = createPage("MM2", "🔪", "tabMM2")
-local subWarPage = createPage("SubWar", "🗡️", "tabSubWar")
 local themesPage = createPage("Themes", "🎨", "tabThemes")
 local settingsPage = createPage("Settings", "⚙", "tabSettings")
 
@@ -1613,7 +1444,7 @@ addSlider(playerPage, "jumpPower", 1, 300, S.jump, function(v) S.jump = v end)
 addToggle(playerPage, "infJump", "infJumpDesc", false, function(v) S.infJump = v end)
 addToggle(playerPage, "noClip", "noClipDesc", false, function(v)
 	S.noclip = v
-	if not v and not S.underGround and not S.fly then restoreNoclip() end
+	if not v and not S.fly then restoreNoclip() end
 end)
 
 addSection(playerPage, "secFlight")
@@ -1800,62 +1631,6 @@ task.spawn(function()
 		refreshPlayerListUI()
 		task.wait(1)
 	end
-end)
-
--- ---- Guerra Subterranea ----
-addSection(subWarPage, "secSubWar")
-local statusRow = row(subWarPage, 40)
-local statusLbl = new("TextLabel", {
-	Size = UDim2.new(1, -24, 1, 0),
-	Position = UDim2.new(0, 12, 0, 0),
-	BackgroundTransparency = 1,
-	Text = "",
-	Font = Enum.Font.GothamBold,
-	TextSize = 12,
-	TextWrapped = true,
-	TextXAlignment = Enum.TextXAlignment.Left,
-}, statusRow)
-bind(function()
-	statusLbl.TextColor3 = isTargetPlace16Or17() and T.accent or T.gray
-	local detail = isTargetPlace16Or17()
-		and L("subWarDetected", game.PlaceId)
-		or L("subWarOtherPlace", game.PlaceId)
-	statusLbl.Text = L("subWarStatus", detail)
-end)
-
-underGroundToggleApi = addToggle(subWarPage, "underGroundMode", "underGroundDesc", false, function(v)
-	if v then
-		S.underGround = true
-		if enterUnderground() then
-			notify(L("subWarEnterToast"))
-		else
-			S.underGround = false
-			if underGroundToggleApi and underGroundToggleApi.sync then
-				underGroundToggleApi.sync(false)
-			end
-		end
-	else
-		appearFromUnderground(false)
-	end
-end)
-
-addSlider(subWarPage, "underSpeed", 8, 120, S.underSpeed, function(v)
-	S.underSpeed = v
-end)
-
-addSlider(subWarPage, "underDepth", 5, 40, S.underDepth, function(v)
-	S.underDepth = v
-	if S.underGround and getRoot() then
-		local gY = computeGroundY(getRoot().Position)
-		underAnchorY = gY - v
-	end
-end)
-
-addButton(subWarPage, "appearBtn", function()
-	if underGroundToggleApi and underGroundToggleApi.sync then
-		underGroundToggleApi.sync(false)
-	end
-	appearFromUnderground(false)
 end)
 
 -- ---- Themes ----
@@ -2190,10 +1965,6 @@ end))
 
 -- ====================== UNLOAD ======================
 unload = function()
-	S.underGround = false
-	underAnchorY = nil
-	applySelfClearView(false)
-	savedSurfacePos = nil
 	S.fly = false
 	stopFly()
 	S.noclip = false
