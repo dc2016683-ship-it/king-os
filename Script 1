@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro 2 (2.23) | For Delta
+	KingOS Universal Pro (2.33) | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "PRO 2 (2.23)"
+local VERSION = "PRO (2.33)"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -81,6 +81,8 @@ local I18N = {
 		secCharacter = "Personaje",
 		sitToggle = "Sit",
 		sitDesc = "Sentar o levantar al personaje",
+		invisibilityBtn = "Invisibilidad",
+		invisibilityToast = "Ejecutando script de invisibilidad...",
 		resetChar = "Reiniciar Personaje",
 		refreshChar = "Refrescar Personaje",
 		refreshToast = "Refrescando personaje...",
@@ -110,35 +112,18 @@ local I18N = {
 		espSheriffDesc = "Resalta al jugador que tiene el arma",
 		espInnocent = "ESP INNOCENT",
 		espInnocentDesc = "Resalta a los jugadores inocentes",
-		flingMurder = "Fling Murder",
-		flingSheriff = "Fling Sherif",
+		murderInfoNone = "Murder: No detectado",
+		murderInfoFmt = "Murder: %s (@%s)",
+		sheriffInfoNone = "Sheriff: No detectado",
+		sheriffInfoFmt = "Sheriff: %s (@%s)",
+		openFlingList = "Abrir lista de fling",
+		openFlingListToast = "Abriendo lista de fling...",
 		tpGun = "Teleport to Gun",
-		secPlayersList = "Lista de Jugadores (Auto 1s)",
-		selectedNone = "Seleccionado: Ninguno",
-		selectedEmpty = "Seleccionado: Ninguno (sin otros jugadores)",
-		selectedFmt = "Seleccionado: %s (@%s)",
-		tagInnocent = " [INOCENTE]",
-		tagMurder = " [MURDER]",
-		tagSheriff = " [SHERIFF]",
-		tpSelected = "TP a Jugador Seleccionado",
-		spectateSelected = "Espectar Jugador Seleccionado",
-		spectateOnToast = "Espectando a %s",
-		spectateOffToast = "Cámara devuelta a tu personaje",
-		flingSelected = "Fling Jugador Seleccionado",
 
-		flingBusy = "Ya hay un fling en proceso",
-		flingInvalidTarget = "Selecciona un jugador válido",
-		flingNoTargetChar = "Objetivo sin personaje activo",
 		flingNoMyChar = "Tu personaje no está listo",
-		flingStart = "Fling multi-dirección a %s...",
-		flingDone = "Fling completado",
-		noMurder = "No se encontró Murder",
-		noSheriff = "No se encontró Sheriff",
-		noSelectedPlayer = "No hay jugador seleccionado",
 		noGun = "No hay Gun caída en el mapa",
 		pickingGun = "Recogiendo Gun...",
 		backToPos = "Regresaste a tu posición",
-		tpDoneToast = "Teletransportado a %s",
 
 		secColorTheme = "Tema de Color",
 		themeToast = "Tema: %s",
@@ -165,7 +150,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
+		versionNotesText = "• PRO (2.33): Detección de Murder y Sheriff en MM2, botón Abrir lista de fling y botón Invisibilidad en Player.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -210,6 +195,8 @@ local I18N = {
 		secCharacter = "Character",
 		sitToggle = "Sit",
 		sitDesc = "Sit or stand your character",
+		invisibilityBtn = "Invisibility",
+		invisibilityToast = "Executing invisibility script...",
 		resetChar = "Reset Character",
 		refreshChar = "Refresh Character",
 		refreshToast = "Refreshing character...",
@@ -239,35 +226,18 @@ local I18N = {
 		espSheriffDesc = "Highlights the player holding the gun",
 		espInnocent = "ESP INNOCENT",
 		espInnocentDesc = "Highlights innocent players",
-		flingMurder = "Fling Murder",
-		flingSheriff = "Fling Sherif",
+		murderInfoNone = "Murder: Not detected",
+		murderInfoFmt = "Murder: %s (@%s)",
+		sheriffInfoNone = "Sheriff: Not detected",
+		sheriffInfoFmt = "Sheriff: %s (@%s)",
+		openFlingList = "Open Fling List",
+		openFlingListToast = "Opening fling list...",
 		tpGun = "Teleport to Gun",
-		secPlayersList = "Players List (Auto 1s)",
-		selectedNone = "Selected: None",
-		selectedEmpty = "Selected: None (no other players)",
-		selectedFmt = "Selected: %s (@%s)",
-		tagInnocent = " [INNOCENT]",
-		tagMurder = " [MURDER]",
-		tagSheriff = " [SHERIFF]",
-		tpSelected = "TP to Selected Player",
-		spectateSelected = "Spectate Selected Player",
-		spectateOnToast = "Spectating %s",
-		spectateOffToast = "Camera returned to your character",
-		flingSelected = "Fling Selected Player",
 
-		flingBusy = "A fling is already in progress",
-		flingInvalidTarget = "Select a valid player",
-		flingNoTargetChar = "Target has no active character",
 		flingNoMyChar = "Your character is not ready",
-		flingStart = "Multi-angle fling on %s...",
-		flingDone = "Fling completed",
-		noMurder = "Murder not found",
-		noSheriff = "Sheriff not found",
-		noSelectedPlayer = "No player selected",
 		noGun = "No dropped Gun found on the map",
 		pickingGun = "Picking up Gun...",
 		backToPos = "Returned to your position",
-		tpDoneToast = "Teleported to %s",
 
 		secColorTheme = "Color Theme",
 		themeToast = "Theme: %s",
@@ -294,7 +264,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
+		versionNotesText = "• PRO (2.33): Murder & Sheriff role detection in MM2, Open Fling List button, and Invisibility button in Player.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -392,7 +362,7 @@ local function applyTheme(name)
 	refreshAll()
 end
 
-local refreshPlayerListUI = function() end
+local refreshRoleInfoUI = function() end
 local function setLanguage(langCode)
 	if langCode ~= "es" and langCode ~= "en" then return end
 	currentLang = langCode
@@ -402,7 +372,7 @@ local function setLanguage(langCode)
 		end
 	end)
 	refreshAll()
-	refreshPlayerListUI()
+	refreshRoleInfoUI()
 	notify(langCode == "en" and L("langChangedEn") or L("langChangedEs"))
 end
 
@@ -688,7 +658,6 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
-
 	-- Vuelo fluido controlado por CFrame + velocidad limpia
 	if S.fly then
 		local root, hum = getRoot(), getHum()
@@ -779,18 +748,13 @@ local function playerHasRoleTool(plr, role)
 	return false
 end
 
-local function findMM2Target(role)
+local function findMM2RolePlayer(role)
 	for _, plr in ipairs(Players:GetPlayers()) do
 		if plr ~= player and playerHasRoleTool(plr, role) then
-			local char = plr.Character
-			local hrp = char and char:FindFirstChild("HumanoidRootPart")
-			local hum = char and char:FindFirstChildOfClass("Humanoid")
-			if hrp and hum and hum.Health > 0 then
-				return plr, char, hrp
-			end
+			return plr
 		end
 	end
-	return nil, nil, nil
+	return nil
 end
 
 local espObjects = {}
@@ -895,133 +859,6 @@ end
 track(Players.PlayerRemoving:Connect(clearEspEntry))
 track(RunService.RenderStepped:Connect(updateMM2Esp))
 
--- ====================== ALL-DIRECTION SPIN FLING ======================
-local flingBusy = false
-local FLING_DIRS = {
-	Vector3.new(1, 0.75, 0),
-	Vector3.new(-1, 0.75, 0),
-	Vector3.new(0, 0.75, 1),
-	Vector3.new(0, 0.75, -1),
-	Vector3.new(0.8, 0.85, 0.8),
-	Vector3.new(-0.8, 0.85, 0.8),
-	Vector3.new(0.8, 0.85, -0.8),
-	Vector3.new(-0.8, 0.85, -0.8),
-}
-
-local function flingTargetPlayer(targetPlr)
-	if flingBusy then
-		notify(L("flingBusy"))
-		return
-	end
-	if not targetPlr or not targetPlr.Parent or targetPlr == player then
-		notify(L("flingInvalidTarget"))
-		return
-	end
-
-	local targetChar = targetPlr.Character
-	local targetHrp = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
-	local targetHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
-	local myChar = player.Character
-	local myRoot, myHum = getRoot(), getHum()
-
-	if not targetHrp or not targetHum or targetHum.Health <= 0 then
-		notify(L("flingNoTargetChar"))
-		return
-	end
-	if not myChar or not myRoot or not myHum then
-		notify(L("flingNoMyChar"))
-		return
-	end
-
-	flingBusy = true
-	local prevSit = myHum.Sit
-	myHum.Sit = false
-
-	local prevCollide = {}
-	for _, v in ipairs(myChar:GetDescendants()) do
-		if v:IsA("BasePart") then
-			prevCollide[v] = v.CanCollide
-			v.CanCollide = true
-		end
-	end
-
-	local spinVec = Vector3.new(9e6, 9e6, 9e6)
-	local bv = new("BodyVelocity", {
-		MaxForce = Vector3.new(1e9, 1e9, 1e9),
-		Velocity = Vector3.zero,
-	}, myRoot)
-	local bav = new("BodyAngularVelocity", {
-		MaxTorque = Vector3.new(1e9, 1e9, 1e9),
-		AngularVelocity = spinVec,
-		P = 1e9,
-	}, myRoot)
-
-	notify(L("flingStart", targetPlr.DisplayName))
-
-	local elapsed = 0
-	local step = 0
-	while elapsed < 1.6 do
-		local dt = RunService.Heartbeat:Wait()
-		elapsed += dt
-
-		if not targetHrp or not targetHrp.Parent or not myRoot or not myRoot.Parent then
-			break
-		end
-		local tHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
-		if tHum and tHum.Health <= 0 then
-			break
-		end
-
-		step += 1
-		local dirPattern = FLING_DIRS[((step - 1) % #FLING_DIRS) + 1]
-		local orbitAngle = step * 1.85
-		local radialOffset = Vector3.new(
-			math.cos(orbitAngle) * 1.35,
-			math.sin(orbitAngle * 1.3) * 1.15,
-			math.sin(orbitAngle) * 1.35
-		)
-		local targetPos = targetHrp.Position + (targetHrp.AssemblyLinearVelocity * 0.08) + radialOffset
-
-		myRoot.CFrame = CFrame.new(targetPos, targetHrp.Position)
-			* CFrame.Angles(orbitAngle * 7, orbitAngle * 9, orbitAngle * 5)
-
-		local flingVel = dirPattern.Unit * 240
-		bv.Velocity = flingVel
-		bav.AngularVelocity = spinVec
-		myRoot.AssemblyLinearVelocity = flingVel
-		myRoot.AssemblyAngularVelocity = spinVec
-	end
-
-	pcall(function() bv:Destroy() end)
-	pcall(function() bav:Destroy() end)
-
-	if myRoot and myRoot.Parent then
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
-	end
-
-	for part, oldState in pairs(prevCollide) do
-		if part and part.Parent then
-			part.CanCollide = oldState
-		end
-	end
-	if myHum and myHum.Parent then
-		myHum.Sit = prevSit
-	end
-
-	flingBusy = false
-	notify(L("flingDone"))
-end
-
-local function flingRole(role)
-	local targetPlr = findMM2Target(role)
-	if not targetPlr then
-		notify(role == "murder" and L("noMurder") or L("noSheriff"))
-		return
-	end
-	flingTargetPlayer(targetPlr)
-end
-
 local function findDroppedGun()
 	for _, obj in ipairs(Workspace:GetDescendants()) do
 		if obj.Name == "GunDrop" or (obj:IsA("BasePart") and string.lower(obj.Name) == "gundrop") then
@@ -1063,61 +900,6 @@ local function teleportToGunAndBack()
 	end
 	tpGunBusy = false
 	notify(L("backToPos"))
-end
-
-local spectatingTarget = nil
-local function stopSpectate(silent)
-	spectatingTarget = nil
-	local cam = Workspace.CurrentCamera
-	local hum = getHum()
-	if cam and hum then
-		cam.CameraType = Enum.CameraType.Custom
-		cam.CameraSubject = hum
-	end
-	if not silent then
-		notify(L("spectateOffToast"))
-	end
-end
-
-local function toggleSpectate(targetPlr)
-	if spectatingTarget == targetPlr then
-		stopSpectate(false)
-		return
-	end
-	if not targetPlr or not targetPlr.Parent or targetPlr == player then
-		notify(L("noSelectedPlayer"))
-		return
-	end
-	local tHum = targetPlr.Character and targetPlr.Character:FindFirstChildOfClass("Humanoid")
-	local cam = Workspace.CurrentCamera
-	if not tHum or not cam then
-		notify(L("flingNoTargetChar"))
-		return
-	end
-	spectatingTarget = targetPlr
-	cam.CameraType = Enum.CameraType.Custom
-	cam.CameraSubject = tHum
-	notify(L("spectateOnToast", targetPlr.DisplayName))
-end
-
-local function teleportToPlayer(targetPlr)
-	if not targetPlr or not targetPlr.Parent or targetPlr == player then
-		notify(L("noSelectedPlayer"))
-		return
-	end
-	local tRoot = targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart")
-	local myRoot = getRoot()
-	if not tRoot then
-		notify(L("flingNoTargetChar"))
-		return
-	end
-	if not myRoot then
-		notify(L("flingNoMyChar"))
-		return
-	end
-	myRoot.AssemblyLinearVelocity = Vector3.zero
-	myRoot.CFrame = tRoot.CFrame + Vector3.new(0, 2, -3)
-	notify(L("tpDoneToast", targetPlr.DisplayName))
 end
 
 -- ====================== MAIN PANEL ======================
@@ -1675,6 +1457,14 @@ addToggle(playerPage, "sitToggle", "sitDesc", false, function(v)
 	local hum = getHum()
 	if hum then hum.Sit = v end
 end)
+addButton(playerPage, "invisibilityBtn", function()
+	notify(L("invisibilityToast"))
+	task.spawn(function()
+		pcall(function()
+			loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Awesome-Invisible-man-21074"))()
+		end)
+	end)
+end)
 addButton(playerPage, "resetChar", function()
 	local hum = getHum()
 	if hum then hum.Health = 0 end
@@ -1748,6 +1538,52 @@ end)
 
 -- ---- MM2 ----
 addSection(mm2Page, "secRoles")
+
+local roleCard = row(mm2Page, 54)
+local murderStatusLbl = new("TextLabel", {
+	Size = UDim2.new(1, -24, 0, 20),
+	Position = UDim2.new(0, 12, 0, 6),
+	BackgroundTransparency = 1,
+	Text = L("murderInfoNone"),
+	Font = Enum.Font.GothamBold,
+	TextSize = 13,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextTruncate = Enum.TextTruncate.AtEnd,
+}, roleCard)
+local sheriffStatusLbl = new("TextLabel", {
+	Size = UDim2.new(1, -24, 0, 20),
+	Position = UDim2.new(0, 12, 0, 28),
+	BackgroundTransparency = 1,
+	Text = L("sheriffInfoNone"),
+	Font = Enum.Font.GothamBold,
+	TextSize = 13,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextTruncate = Enum.TextTruncate.AtEnd,
+}, roleCard)
+
+refreshRoleInfoUI = function()
+	local mPlr = findMM2RolePlayer("murder")
+	local sPlr = findMM2RolePlayer("sheriff")
+
+	if mPlr then
+		murderStatusLbl.Text = L("murderInfoFmt", mPlr.DisplayName, mPlr.Name)
+		murderStatusLbl.TextColor3 = Color3.fromRGB(240, 65, 85)
+	else
+		murderStatusLbl.Text = L("murderInfoNone")
+		murderStatusLbl.TextColor3 = T.gray
+	end
+
+	if sPlr then
+		sheriffStatusLbl.Text = L("sheriffInfoFmt", sPlr.DisplayName, sPlr.Name)
+		sheriffStatusLbl.TextColor3 = Color3.fromRGB(70, 150, 255)
+	else
+		sheriffStatusLbl.Text = L("sheriffInfoNone")
+		sheriffStatusLbl.TextColor3 = T.gray
+	end
+end
+
+bind(refreshRoleInfoUI)
+
 addToggle(mm2Page, "espMurder", "espMurderDesc", false, function(v)
 	S.espMurder = v
 	updateMM2Esp()
@@ -1760,144 +1596,21 @@ addToggle(mm2Page, "espInnocent", "espInnocentDesc", false, function(v)
 	S.espInnocent = v
 	updateMM2Esp()
 end)
-addButton(mm2Page, "flingMurder", function()
-	flingRole("murder")
-end)
-addButton(mm2Page, "flingSheriff", function()
-	flingRole("sheriff")
+addButton(mm2Page, "openFlingList", function()
+	notify(L("openFlingListToast"))
+	task.spawn(function()
+		pcall(function()
+			loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Omar0x0x0-Fling-Menu-150965"))()
+		end)
+	end)
 end)
 addButton(mm2Page, "tpGun", function()
 	teleportToGunAndBack()
 end)
 
-addSection(mm2Page, "secPlayersList")
-local selectedPlayer = nil
-local selectedLbl = new("TextLabel", {
-	Size = UDim2.new(1, 0, 0, 24),
-	BackgroundTransparency = 1,
-	Text = L("selectedNone"),
-	Font = Enum.Font.GothamBold,
-	TextSize = 12,
-	TextXAlignment = Enum.TextXAlignment.Left,
-	LayoutOrder = nextOrder(),
-}, mm2Page)
-bind(function() selectedLbl.TextColor3 = T.accent end)
-
-local playerListBox = new("ScrollingFrame", {
-	Size = UDim2.new(1, 0, 0, 126),
-	BorderSizePixel = 0,
-	ScrollBarThickness = 3,
-	CanvasSize = UDim2.new(),
-	AutomaticCanvasSize = Enum.AutomaticSize.Y,
-	LayoutOrder = nextOrder(),
-}, mm2Page)
-corner(playerListBox, 10)
-local pListStroke = stroke(playerListBox, 1)
-new("UIListLayout", { Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, playerListBox)
-new("UIPadding", {
-	PaddingTop = UDim.new(0, 6),
-	PaddingBottom = UDim.new(0, 6),
-	PaddingLeft = UDim.new(0, 6),
-	PaddingRight = UDim.new(0, 6),
-}, playerListBox)
-bind(function()
-	playerListBox.BackgroundColor3 = T.bg2
-	playerListBox.ScrollBarImageColor3 = T.accent
-	pListStroke.Color = T.bg3
-end)
-
-refreshPlayerListUI = function()
-	for _, child in ipairs(playerListBox:GetChildren()) do
-		if child:IsA("TextButton") then
-			child:Destroy()
-		end
-	end
-
-	if selectedPlayer and not selectedPlayer.Parent then
-		if spectatingTarget == selectedPlayer then
-			stopSpectate(true)
-		end
-		selectedPlayer = nil
-	end
-
-	local list = {}
-	for _, plr in ipairs(Players:GetPlayers()) do
-		if plr ~= player then
-			table.insert(list, plr)
-		end
-	end
-
-	if #list == 0 then
-		selectedLbl.Text = L("selectedEmpty")
-		return
-	end
-
-	if not selectedPlayer then
-		selectedPlayer = list[1]
-	end
-
-	selectedLbl.Text = L("selectedFmt", selectedPlayer.DisplayName, selectedPlayer.Name)
-
-	for _, plr in ipairs(list) do
-		local isSel = (plr == selectedPlayer)
-		local roleTag = L("tagInnocent")
-		if playerHasRoleTool(plr, "murder") then
-			roleTag = L("tagMurder")
-		elseif playerHasRoleTool(plr, "sheriff") then
-			roleTag = L("tagSheriff")
-		end
-
-		local itemBtn = new("TextButton", {
-			Size = UDim2.new(1, 0, 0, 28),
-			Text = plr.DisplayName .. " (@" .. plr.Name .. ")" .. roleTag,
-			Font = isSel and Enum.Font.GothamBold or Enum.Font.GothamMedium,
-			TextSize = 12,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			AutoButtonColor = false,
-			BackgroundColor3 = isSel and T.accent or T.bg3,
-			TextColor3 = isSel and T.onAccent or T.text,
-			LayoutOrder = nextOrder(),
-		}, playerListBox)
-		corner(itemBtn, 7)
-		new("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) }, itemBtn)
-
-		itemBtn.MouseButton1Click:Connect(function()
-			selectedPlayer = plr
-			refreshPlayerListUI()
-		end)
-	end
-end
-
-addButton(mm2Page, "tpSelected", function()
-	if not selectedPlayer or not selectedPlayer.Parent then
-		refreshPlayerListUI()
-		notify(L("noSelectedPlayer"))
-		return
-	end
-	teleportToPlayer(selectedPlayer)
-end)
-
-addButton(mm2Page, "spectateSelected", function()
-	if not selectedPlayer or not selectedPlayer.Parent then
-		refreshPlayerListUI()
-		notify(L("noSelectedPlayer"))
-		return
-	end
-	toggleSpectate(selectedPlayer)
-end)
-
-addButton(mm2Page, "flingSelected", function()
-	if not selectedPlayer or not selectedPlayer.Parent then
-		refreshPlayerListUI()
-		notify(L("noSelectedPlayer"))
-		return
-	end
-	flingTargetPlayer(selectedPlayer)
-end)
-
 task.spawn(function()
 	while gui.Parent do
-		refreshPlayerListUI()
+		refreshRoleInfoUI()
 		task.wait(1)
 	end
 end)
@@ -2235,7 +1948,6 @@ end))
 -- ====================== UNLOAD ======================
 unload = function()
 	stopFlingSpin()
-	stopSpectate(true)
 	S.fly = false
 	stopFly()
 	S.noclip = false
