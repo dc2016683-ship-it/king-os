@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro v2.22.1 Beta | For Delta
+	KingOS Universal Pro v2.22.2 Beta | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Guerra Subterranea, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "v2.22.1 Beta"
+local VERSION = "v2.22.2 Beta"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -69,7 +69,7 @@ local I18N = {
 		noClipDesc = "Caminar a través de paredes",
 		secFlight = "Vuelo",
 		fly = "Fly",
-		flyDesc = "Space/E subir, Q/Ctrl bajar (Detecta Place 16/17)",
+		flyDesc = "Space/E subir, Q/Ctrl bajar (Vuelo suave)",
 		flyNoChar = "Fly: no se encontró personaje",
 		flySpeed = "Fly Speed",
 		secCharacter = "Personaje",
@@ -110,15 +110,15 @@ local I18N = {
 
 		secSubWar = "Guerra Subterránea 🗡️",
 		subWarStatus = "Estado del Juego: %s",
-		subWarDetected = "Detectado Place %d (Modo Subterráneo Activo)",
-		subWarOtherPlace = "Place actual: %d (También disponible manual)",
+		subWarDetected = "Detectado Place %d (Modo Subterráneo Listo)",
+		subWarOtherPlace = "Place actual: %d (Modo Subterráneo Libre)",
 		underGroundMode = "Ir Debajo del Suelo",
-		underGroundDesc = "Baja bajo el suelo; tú te ves y evitas ataques normales",
+		underGroundDesc = "Muévete bajo el mapa con vista libre y menor exposición",
+		underSpeed = "Velocidad Bajo Suelo",
 		underDepth = "Profundidad Bajo Suelo",
 		appearBtn = "Aparecer",
-		subWarEnterToast = "Bajaste debajo del suelo (tú sigues visible)",
+		subWarEnterToast = "Modo subterráneo activo: muévete libremente",
 		subWarAppearToast = "Volviste a aparecer en la superficie",
-		subWarFlyAutoToast = "Place %d detectado: Fly subterráneo activado",
 
 		flingBusy = "Ya hay un fling en proceso",
 		flingInvalidTarget = "Selecciona un jugador válido",
@@ -158,7 +158,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.22.1 Beta: Pestaña Guerra Subterránea 🗡️ con detección de Place 16/17, modo bajo suelo visible para ti y botón Aparecer.\n• v2.22.0: Fling multi-dirección con giro en todos los ejes para Murder, Sheriff y jugadores seleccionados.\n• v2.22: Botones de idioma Español / English en Settings y traducción de interfaz.",
+		versionNotesText = "• v2.22.2 Beta: Velocidad ajustable bajo el suelo, desplazamiento fluido con vista libre del mapa y Fly más estable.\n• v2.22.1 Beta: Pestaña Guerra Subterránea 🗡️ con modo bajo suelo y botón Aparecer.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -191,7 +191,7 @@ local I18N = {
 		noClipDesc = "Walk through walls",
 		secFlight = "Flight",
 		fly = "Fly",
-		flyDesc = "Space/E up, Q/Ctrl down (Detects Place 16/17)",
+		flyDesc = "Space/E up, Q/Ctrl down (Smooth flight)",
 		flyNoChar = "Fly: no character found",
 		flySpeed = "Fly Speed",
 		secCharacter = "Character",
@@ -233,14 +233,14 @@ local I18N = {
 		secSubWar = "Underground War 🗡️",
 		subWarStatus = "Game Status: %s",
 		subWarDetected = "Detected Place %d (Underground Mode Ready)",
-		subWarOtherPlace = "Current Place: %d (Manual mode also available)",
+		subWarOtherPlace = "Current Place: %d (Free Underground Mode)",
 		underGroundMode = "Go Underground",
-		underGroundDesc = "Go beneath the ground; you see yourself and dodge normal attacks",
+		underGroundDesc = "Move beneath the map with clear view and lower exposure",
+		underSpeed = "Underground Speed",
 		underDepth = "Underground Depth",
 		appearBtn = "Appear",
-		subWarEnterToast = "Went underground (you remain visible to yourself)",
+		subWarEnterToast = "Underground mode active: move freely",
 		subWarAppearToast = "Reappeared on the surface",
-		subWarFlyAutoToast = "Place %d detected: Underground fly active",
 
 		flingBusy = "A fling is already in progress",
 		flingInvalidTarget = "Select a valid player",
@@ -280,7 +280,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.22.1 Beta: Underground War 🗡️ tab with Place 16/17 detection, self-visible underground mode, and Appear button.\n• v2.22.0: All-direction fling with full-axis high-speed spin for Murder, Sheriff, and selected players.\n• v2.22: Spanish / English language buttons in Settings and UI translation.",
+		versionNotesText = "• v2.22.2 Beta: Adjustable underground speed, smooth free movement with clear map view, and steadier Fly.\n• v2.22.1 Beta: Underground War 🗡️ tab with underground mode and Appear button.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -442,7 +442,7 @@ local S = {
 	jumpOn = false, jump = 100,
 	infJump = false,
 	noclip = false,
-	fly = false, flySpeed = 60,
+	fly = false, flySpeed = 45,
 	fov = nil,
 	fullbright = false,
 	noFog = false,
@@ -452,7 +452,8 @@ local S = {
 	espSheriff = false,
 	espInnocent = false,
 	underGround = false,
-	underDepth = 14,
+	underSpeed = 32,
+	underDepth = 12,
 }
 
 local function isTargetPlace16Or17()
@@ -561,10 +562,9 @@ end
 local underGroundToggleApi = nil
 local savedSurfacePos = nil
 local underAnchorY = nil
-local underBV, underBG
 local selfTranspSaved = setmetatable({}, { __mode = "k" })
 
-local function applySelfVisibleInvisibility(active)
+local function applySelfClearView(active)
 	local c = player.Character
 	if not c then return end
 	if active then
@@ -573,8 +573,8 @@ local function applySelfVisibleInvisibility(active)
 				if selfTranspSaved[v] == nil then
 					selfTranspSaved[v] = v.LocalTransparencyModifier
 				end
-				-- Tú sigues viéndote a ti mismo (LocalTransparencyModifier bajo)
-				v.LocalTransparencyModifier = 0.35
+				-- Vista clara para ti mientras estás bajo el suelo
+				v.LocalTransparencyModifier = 0.45
 			end
 		end
 	else
@@ -587,10 +587,14 @@ local function applySelfVisibleInvisibility(active)
 	end
 end
 
-local function stopUndergroundMovement()
-	if underBV then underBV:Destroy() underBV = nil end
-	if underBG then underBG:Destroy() underBG = nil end
-	underAnchorY = nil
+local function computeGroundY(pos)
+	local rayParams = RaycastParams.new()
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	if player.Character then
+		rayParams.FilterDescendantsInstances = { player.Character }
+	end
+	local hit = Workspace:Raycast(pos + Vector3.new(0, 35, 0), Vector3.new(0, -160, 0), rayParams)
+	return hit and hit.Position.Y or pos.Y
 end
 
 local function enterUnderground()
@@ -604,46 +608,29 @@ local function enterUnderground()
 		savedSurfacePos = root.Position
 	end
 
-	local rayParams = RaycastParams.new()
-	rayParams.FilterType = Enum.RaycastFilterType.Exclude
-	rayParams.FilterDescendantsInstances = { player.Character }
-	local rayOrigin = root.Position + Vector3.new(0, 4, 0)
-	local rayResult = Workspace:Raycast(rayOrigin, Vector3.new(0, -120, 0), rayParams)
-	local groundY = rayResult and rayResult.Position.Y or root.Position.Y
-	underAnchorY = groundY - math.max(6, S.underDepth)
-
-	stopUndergroundMovement()
-	underBV = new("BodyVelocity", {
-		MaxForce = Vector3.new(1e9, 1e9, 1e9),
-		Velocity = Vector3.zero,
-	}, root)
-	underBG = new("BodyGyro", {
-		MaxTorque = Vector3.new(1e9, 1e9, 1e9),
-		P = 9e4,
-		CFrame = root.CFrame,
-	}, root)
+	local groundY = computeGroundY(root.Position)
+	underAnchorY = groundY - math.max(5, S.underDepth)
 
 	hum.PlatformStand = false
+	root.AssemblyLinearVelocity = Vector3.zero
+	root.AssemblyAngularVelocity = Vector3.zero
 	root.CFrame = CFrame.new(root.Position.X, underAnchorY, root.Position.Z) * (root.CFrame - root.CFrame.Position)
-	applySelfVisibleInvisibility(true)
+	applySelfClearView(true)
 	return true
 end
 
 local function appearFromUnderground(silent)
 	S.underGround = false
-	stopUndergroundMovement()
-	applySelfVisibleInvisibility(false)
+	underAnchorY = nil
+	applySelfClearView(false)
 
 	local root, hum = getRoot(), getHum()
 	if root and hum then
 		hum.PlatformStand = false
 		local targetPos = savedSurfacePos
 		if not targetPos then
-			local rayParams = RaycastParams.new()
-			rayParams.FilterType = Enum.RaycastFilterType.Exclude
-			rayParams.FilterDescendantsInstances = { player.Character }
-			local hit = Workspace:Raycast(root.Position + Vector3.new(0, 40, 0), Vector3.new(0, -120, 0), rayParams)
-			targetPos = hit and (hit.Position + Vector3.new(0, 3.5, 0)) or (root.Position + Vector3.new(0, S.underDepth + 3, 0))
+			local gY = computeGroundY(root.Position)
+			targetPos = Vector3.new(root.Position.X, gY + 3.5, root.Position.Z)
 		end
 		root.AssemblyLinearVelocity = Vector3.zero
 		root.AssemblyAngularVelocity = Vector3.zero
@@ -660,7 +647,7 @@ local function appearFromUnderground(silent)
 end
 
 track(RunService.Stepped:Connect(function()
-	if S.noclip or S.underGround then
+	if S.noclip or S.underGround or S.fly then
 		local c = player.Character
 		if c then
 			for _, v in ipairs(c:GetDescendants()) do
@@ -682,105 +669,110 @@ track(UserInputService.JumpRequest:Connect(function()
 	end
 end))
 
-local flyBV, flyBG
 local flyUp, flyDown = false, false
 
 local function stopFly()
-	if flyBV then flyBV:Destroy() flyBV = nil end
-	if flyBG then flyBG:Destroy() flyBG = nil end
-	local hum = getHum()
+	flyUp, flyDown = false, false
+	local hum, root = getHum(), getRoot()
 	if hum then
 		hum.PlatformStand = false
+	end
+	if root and root.Parent then
+		root.AssemblyLinearVelocity = Vector3.zero
+	end
+	if not S.noclip and not S.underGround then
+		restoreNoclip()
 	end
 end
 
 local function startFly()
 	local root, hum = getRoot(), getHum()
 	if not root or not hum then return false end
-	stopFly()
-	flyBV = new("BodyVelocity", {
-		MaxForce = Vector3.new(1e9, 1e9, 1e9),
-		Velocity = Vector3.zero,
-	}, root)
-	flyBG = new("BodyGyro", {
-		MaxTorque = Vector3.new(1e9, 1e9, 1e9),
-		P = 9e4,
-		CFrame = root.CFrame,
-	}, root)
 	hum.PlatformStand = true
+	root.AssemblyLinearVelocity = Vector3.zero
 	return true
 end
 
-track(RunService.RenderStepped:Connect(function()
+track(RunService.RenderStepped:Connect(function(dt)
 	local cam = Workspace.CurrentCamera
 
 	if S.fov and cam then
 		cam.FieldOfView = S.fov
 	end
 
+	-- Movimiento fluido bajo el suelo con control de velocidad
 	if S.underGround then
-		local root = getRoot()
-		if root and cam then
-			if not underBV or not underBV.Parent then
-				enterUnderground()
+		local root, hum = getRoot(), getHum()
+		if root and hum and cam then
+			if not underAnchorY then
+				underAnchorY = computeGroundY(root.Position) - math.max(5, S.underDepth)
 			end
-			local moveVec = Vector3.zero
-			local hum = getHum()
-			if hum and hum.MoveDirection.Magnitude > 0 then
+
+			local moveDir = Vector3.zero
+			if hum.MoveDirection.Magnitude > 0 then
 				local flatLook = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
-				if flatLook.Magnitude < 1e-4 then flatLook = Vector3.new(0, 0, -1) else flatLook = flatLook.Unit end
+				if flatLook.Magnitude < 1e-4 then
+					flatLook = Vector3.new(0, 0, -1)
+				else
+					flatLook = flatLook.Unit
+				end
 				local flatRight = Vector3.new(cam.CFrame.RightVector.X, 0, cam.CFrame.RightVector.Z)
-				if flatRight.Magnitude < 1e-4 then flatRight = Vector3.new(1, 0, 0) else flatRight = flatRight.Unit end
+				if flatRight.Magnitude < 1e-4 then
+					flatRight = Vector3.new(1, 0, 0)
+				else
+					flatRight = flatRight.Unit
+				end
 				local rel = cam.CFrame:VectorToObjectSpace(hum.MoveDirection)
-				moveVec = flatLook * (-rel.Z) + flatRight * rel.X
-				if moveVec.Magnitude > 0 then
-					moveVec = moveVec.Unit * math.max(24, S.speedOn and S.speed or 28)
+				moveDir = flatLook * (-rel.Z) + flatRight * rel.X
+				if moveDir.Magnitude > 0 then
+					moveDir = moveDir.Unit
 				end
 			end
 
-			if underAnchorY then
-				local errY = underAnchorY - root.Position.Y
-				local yVel = math.clamp(errY * 14, -40, 40)
-				if underBV and underBV.Parent then
-					underBV.Velocity = Vector3.new(moveVec.X, yVel, moveVec.Z)
-				end
-				if underBG and underBG.Parent then
-					local lookDir = cam.CFrame.LookVector
-					local flatDir = Vector3.new(lookDir.X, 0, lookDir.Z)
-					if flatDir.Magnitude > 1e-4 then
-						underBG.CFrame = CFrame.lookAt(root.Position, root.Position + flatDir.Unit)
-					end
-				end
-			end
-			applySelfVisibleInvisibility(true)
+			local stepDist = moveDir * (S.underSpeed * math.min(dt, 0.05))
+			local nextX = root.Position.X + stepDist.X
+			local nextZ = root.Position.Z + stepDist.Z
+			local nextY = root.Position.Y + (underAnchorY - root.Position.Y) * math.min(1, dt * 12)
+
+			local lookFlat = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
+			local posVec = Vector3.new(nextX, nextY, nextZ)
+			local targetCF = (lookFlat.Magnitude > 1e-4)
+				and CFrame.lookAt(posVec, posVec + lookFlat.Unit)
+				or (CFrame.new(posVec) * (root.CFrame - root.CFrame.Position))
+
+			root.AssemblyLinearVelocity = Vector3.zero
+			root.AssemblyAngularVelocity = Vector3.zero
+			root.CFrame = targetCF
+			applySelfClearView(true)
 		end
 	end
 
-	if not S.fly then return end
-	local root, hum = getRoot(), getHum()
-	if not (root and hum and cam) then return end
-	if not flyBV or not flyBV.Parent then
-		if not startFly() then return end
-	end
+	-- Vuelo fluido controlado por CFrame + velocidad limpia
+	if S.fly then
+		local root, hum = getRoot(), getHum()
+		if not (root and hum and cam) then return end
+		hum.PlatformStand = true
 
-	local dir = Vector3.zero
-	if hum.MoveDirection.Magnitude > 0 then
-		local rel = cam.CFrame:VectorToObjectSpace(hum.MoveDirection)
-		dir = cam.CFrame.LookVector * (-rel.Z) + cam.CFrame.RightVector * rel.X
-	end
-	local up = Vector3.new(0, 1, 0)
-	if UserInputService:IsKeyDown(Enum.KeyCode.Space) or UserInputService:IsKeyDown(Enum.KeyCode.E) or flyUp then
-		dir += up
-	end
-	if UserInputService:IsKeyDown(Enum.KeyCode.Q) or UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or flyDown then
-		dir -= up
-	end
-	if dir.Magnitude > 0 then
-		dir = dir.Unit
-	end
+		local dir = Vector3.zero
+		if hum.MoveDirection.Magnitude > 0 then
+			local rel = cam.CFrame:VectorToObjectSpace(hum.MoveDirection)
+			dir = cam.CFrame.LookVector * (-rel.Z) + cam.CFrame.RightVector * rel.X
+		end
+		if UserInputService:IsKeyDown(Enum.KeyCode.Space) or UserInputService:IsKeyDown(Enum.KeyCode.E) or flyUp then
+			dir += Vector3.new(0, 1, 0)
+		end
+		if UserInputService:IsKeyDown(Enum.KeyCode.Q) or UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or flyDown then
+			dir -= Vector3.new(0, 1, 0)
+		end
+		if dir.Magnitude > 0 then
+			dir = dir.Unit
+		end
 
-	flyBV.Velocity = dir * S.flySpeed
-	flyBG.CFrame = cam.CFrame
+		local nextPos = root.Position + dir * (S.flySpeed * math.min(dt, 0.05))
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
+		root.CFrame = CFrame.lookAt(nextPos, nextPos + cam.CFrame.LookVector)
+	end
 end))
 
 track(RunService.Heartbeat:Connect(function()
@@ -1621,7 +1613,7 @@ addSlider(playerPage, "jumpPower", 1, 300, S.jump, function(v) S.jump = v end)
 addToggle(playerPage, "infJump", "infJumpDesc", false, function(v) S.infJump = v end)
 addToggle(playerPage, "noClip", "noClipDesc", false, function(v)
 	S.noclip = v
-	if not v and not S.underGround then restoreNoclip() end
+	if not v and not S.underGround and not S.fly then restoreNoclip() end
 end)
 
 addSection(playerPage, "secFlight")
@@ -1629,23 +1621,15 @@ local flyPad
 addToggle(playerPage, "fly", "flyDesc", false, function(v)
 	S.fly = v
 	if v then
-		if isTargetPlace16Or17() then
-			S.underGround = true
-			if underGroundToggleApi and underGroundToggleApi.sync then
-				underGroundToggleApi.sync(true)
-			end
-			enterUnderground()
-			notify(L("subWarFlyAutoToast", game.PlaceId))
-		elseif not startFly() then
+		if not startFly() then
 			notify(L("flyNoChar"))
 		end
 	else
 		stopFly()
-		flyUp, flyDown = false, false
 	end
 	if flyPad then flyPad.Visible = v end
 end)
-addSlider(playerPage, "flySpeed", 10, 300, S.flySpeed, function(v) S.flySpeed = v end)
+addSlider(playerPage, "flySpeed", 10, 200, S.flySpeed, function(v) S.flySpeed = v end)
 
 addSection(playerPage, "secCharacter")
 addButton(playerPage, "resetChar", function()
@@ -1855,14 +1839,14 @@ underGroundToggleApi = addToggle(subWarPage, "underGroundMode", "underGroundDesc
 	end
 end)
 
-addSlider(subWarPage, "underDepth", 6, 40, S.underDepth, function(v)
+addSlider(subWarPage, "underSpeed", 8, 120, S.underSpeed, function(v)
+	S.underSpeed = v
+end)
+
+addSlider(subWarPage, "underDepth", 5, 40, S.underDepth, function(v)
 	S.underDepth = v
 	if S.underGround and getRoot() then
-		local rayParams = RaycastParams.new()
-		rayParams.FilterType = Enum.RaycastFilterType.Exclude
-		rayParams.FilterDescendantsInstances = { player.Character }
-		local hit = Workspace:Raycast(getRoot().Position + Vector3.new(0, 40, 0), Vector3.new(0, -140, 0), rayParams)
-		local gY = hit and hit.Position.Y or (savedSurfacePos and savedSurfacePos.Y or getRoot().Position.Y)
+		local gY = computeGroundY(getRoot().Position)
 		underAnchorY = gY - v
 	end
 end)
@@ -2207,8 +2191,8 @@ end))
 -- ====================== UNLOAD ======================
 unload = function()
 	S.underGround = false
-	stopUndergroundMovement()
-	applySelfVisibleInvisibility(false)
+	underAnchorY = nil
+	applySelfClearView(false)
 	savedSurfacePos = nil
 	S.fly = false
 	stopFly()
