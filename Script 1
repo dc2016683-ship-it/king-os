@@ -591,8 +591,8 @@ local function updateAirWalk()
 	end
 end
 
--- FLING spin high-velocity angular force
-local FLING_SPIN_MULT = 1928388181818283818181
+-- FLING spin: giro suave y controlado
+local FLING_SPIN_MULT = 0.35
 local flingSpinBav = nil
 local flingSpinRoot = nil
 
@@ -623,13 +623,12 @@ local function updateFlingSpin()
 		flingSpinBav = new("BodyAngularVelocity", {
 			Name = "KingOS_FlingSpin",
 			MaxTorque = Vector3.new(math.huge, math.huge, math.huge),
-			AngularVelocity = Vector3.new(0, FLING_SPIN_MULT * math.max(1, S.spinSpeed), 0),
+			AngularVelocity = Vector3.new(0, FLING_SPIN_MULT * math.clamp(S.spinSpeed, 1, 10), 0),
 			P = math.huge,
 		}, root)
 	else
-		local rate = FLING_SPIN_MULT * math.max(1, S.spinSpeed)
+		local rate = FLING_SPIN_MULT * math.clamp(S.spinSpeed, 1, 10)
 		flingSpinBav.AngularVelocity = Vector3.new(0, rate, 0)
-		root.AssemblyAngularVelocity = Vector3.new(0, rate, 0)
 	end
 end
 
@@ -689,15 +688,6 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
-	-- FLING spin: rotación a velocidad 1928388181818283818181
-	if S.spinBot and not S.fly then
-		local root = getRoot()
-		if root then
-			local angle = (FLING_SPIN_MULT * math.max(1, S.spinSpeed)) % (math.pi * 2)
-			root.CFrame = root.CFrame * CFrame.Angles(0, angle, 0)
-			root.AssemblyAngularVelocity = Vector3.new(0, FLING_SPIN_MULT * math.max(1, S.spinSpeed), 0)
-		end
-	end
 
 	-- Vuelo fluido controlado por CFrame + velocidad limpia
 	if S.fly then
