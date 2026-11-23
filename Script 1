@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro (2.33) | For Delta
+	KingOS Universal Pro2 (2.32) DeLuX | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "PRO (2.33)"
+local VERSION = "Pro2 (2.32) DeLuX"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -75,7 +75,7 @@ local I18N = {
 		antiRagdollDesc = "Evita caídas o estados de ragdoll",
 		secFlight = "Vuelo",
 		fly = "Fly",
-		flyDesc = "Space/E subir, Q/Ctrl bajar (Vuelo suave)",
+		flyDesc = "Space/E subir, Q/Ctrl bajar (Vuelo fijo sin caída)",
 		flyNoChar = "Fly: no se encontró personaje",
 		flySpeed = "Fly Speed",
 		secCharacter = "Personaje",
@@ -89,6 +89,8 @@ local I18N = {
 
 		secEnv = "Entorno",
 		gravity = "Gravedad",
+		lowGravityBtn = "Gravedad Baja (15)",
+		lowGravityToast = "Gravedad baja activada (15)",
 		resetGravity = "Reiniciar Gravedad",
 		gravityResetToast = "Gravedad reiniciada",
 		timeOfDay = "Hora del Día",
@@ -104,6 +106,8 @@ local I18N = {
 		fov = "Field of View",
 		resetFov = "Reiniciar FOV",
 		fovResetToast = "FOV reiniciado",
+		resetCamBtn = "Reiniciar Cámara",
+		resetCamToast = "Cámara reiniciada",
 
 		secRoles = "Murder, Sheriff e Inocente",
 		espMurder = "ESP MURDER",
@@ -116,6 +120,9 @@ local I18N = {
 		murderInfoFmt = "Murder: %s (@%s)",
 		sheriffInfoNone = "Sheriff: No detectado",
 		sheriffInfoFmt = "Sheriff: %s (@%s)",
+		copyTargetsBtn = "Copiar Usuario Murder / Sheriff",
+		copyTargetsNone = "No hay Murder ni Sheriff detectado",
+		copyTargetsToast = "Copiado: %s",
 		openFlingList = "Abrir lista de fling",
 		openFlingListToast = "Abriendo lista de fling...",
 		tpGun = "Teleport to Gun",
@@ -150,7 +157,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• PRO (2.33): Fix en Fly para evitar descenso automático, detección de Murder/Sheriff y botón Invisibilidad.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• v2.22.2: Desplazamiento fluido y Fly más estable.",
+		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• Pro2 (2.32) DeLuX: Se corrigió el descenso rápido en Fly, se añadió Gravedad Baja (15), Reiniciar Cámara y Copiar Usuario Murder/Sheriff.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -189,7 +196,7 @@ local I18N = {
 		antiRagdollDesc = "Prevents falling or ragdoll states",
 		secFlight = "Flight",
 		fly = "Fly",
-		flyDesc = "Space/E up, Q/Ctrl down (Smooth flight)",
+		flyDesc = "Space/E up, Q/Ctrl down (Anchored flight, no drop)",
 		flyNoChar = "Fly: no character found",
 		flySpeed = "Fly Speed",
 		secCharacter = "Character",
@@ -203,6 +210,8 @@ local I18N = {
 
 		secEnv = "Environment",
 		gravity = "Gravity",
+		lowGravityBtn = "Low Gravity (15)",
+		lowGravityToast = "Low gravity set to 15",
 		resetGravity = "Reset Gravity",
 		gravityResetToast = "Gravity reset",
 		timeOfDay = "Time of Day",
@@ -218,6 +227,8 @@ local I18N = {
 		fov = "Field of View",
 		resetFov = "Reset FOV",
 		fovResetToast = "FOV reset",
+		resetCamBtn = "Reset Camera",
+		resetCamToast = "Camera reset",
 
 		secRoles = "Murder, Sheriff & Innocent",
 		espMurder = "ESP MURDER",
@@ -230,6 +241,9 @@ local I18N = {
 		murderInfoFmt = "Murder: %s (@%s)",
 		sheriffInfoNone = "Sheriff: Not detected",
 		sheriffInfoFmt = "Sheriff: %s (@%s)",
+		copyTargetsBtn = "Copy Murder / Sheriff Username",
+		copyTargetsNone = "No Murder or Sheriff detected",
+		copyTargetsToast = "Copied: %s",
 		openFlingList = "Open Fling List",
 		openFlingListToast = "Opening fling list...",
 		tpGun = "Teleport to Gun",
@@ -264,7 +278,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• PRO (2.33): Fly drift fix to stop slow downward movement, Murder/Sheriff detection, and Invisibility button.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• v2.22.2: Smooth movement and steadier Fly.",
+		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• Pro2 (2.32) DeLuX: Fixed fast downward drop in Fly, added Low Gravity (15), Reset Camera, and Copy Murder/Sheriff Username.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -628,14 +642,28 @@ track(UserInputService.JumpRequest:Connect(function()
 end))
 
 local flyUp, flyDown = false, false
+local flyAnchoredRoot = nil
+
+local function releaseFlyAnchor()
+	if flyAnchoredRoot and flyAnchoredRoot.Parent then
+		pcall(function()
+			flyAnchoredRoot.Anchored = false
+			flyAnchoredRoot.AssemblyLinearVelocity = Vector3.zero
+			flyAnchoredRoot.AssemblyAngularVelocity = Vector3.zero
+		end)
+	end
+	flyAnchoredRoot = nil
+end
 
 local function stopFly()
 	flyUp, flyDown = false, false
+	releaseFlyAnchor()
 	local hum, root = getHum(), getRoot()
 	if hum then
 		hum.PlatformStand = false
 	end
 	if root and root.Parent then
+		root.Anchored = false
 		root.AssemblyLinearVelocity = Vector3.zero
 		root.AssemblyAngularVelocity = Vector3.zero
 	end
@@ -650,6 +678,8 @@ local function startFly()
 	hum.PlatformStand = true
 	root.AssemblyLinearVelocity = Vector3.zero
 	root.AssemblyAngularVelocity = Vector3.zero
+	root.Anchored = true
+	flyAnchoredRoot = root
 	return true
 end
 
@@ -660,11 +690,16 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
-	-- Vuelo estable sin deslizamiento ni caída automática cuando está quieto
+	-- Vuelo anclado: cero caída rápida ni deslizamiento al estar quieto
 	if S.fly then
 		local root, hum = getRoot(), getHum()
 		if not (root and hum and cam) then return end
+		if flyAnchoredRoot and flyAnchoredRoot ~= root then
+			releaseFlyAnchor()
+		end
 		hum.PlatformStand = true
+		root.Anchored = true
+		flyAnchoredRoot = root
 		root.AssemblyLinearVelocity = Vector3.zero
 		root.AssemblyAngularVelocity = Vector3.zero
 
@@ -694,6 +729,7 @@ track(RunService.Heartbeat:Connect(function()
 	local hum, root = getHum(), getRoot()
 	if S.fly and hum and root then
 		hum.PlatformStand = true
+		root.Anchored = true
 		root.AssemblyLinearVelocity = Vector3.zero
 		root.AssemblyAngularVelocity = Vector3.zero
 	end
@@ -765,6 +801,12 @@ local function findMM2RolePlayer(role)
 		end
 	end
 	return nil
+end
+
+local function copyToClipboardSafe(txt)
+	if setclipboard then
+		pcall(setclipboard, txt)
+	end
 end
 
 local espObjects = {}
@@ -898,7 +940,9 @@ local function teleportToGunAndBack()
 	end
 
 	tpGunBusy = true
+	local wasAnchored = myRoot.Anchored
 	local oldCF = myRoot.CFrame
+	myRoot.Anchored = false
 	myRoot.AssemblyLinearVelocity = Vector3.zero
 	myRoot.CFrame = gunPart.CFrame + Vector3.new(0, 1.5, 0)
 	notify(L("pickingGun"))
@@ -907,6 +951,7 @@ local function teleportToGunAndBack()
 	if myRoot and myRoot.Parent then
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.CFrame = oldCF
+		myRoot.Anchored = wasAnchored
 	end
 	tpGunBusy = false
 	notify(L("backToPos"))
@@ -1476,10 +1521,12 @@ addButton(playerPage, "invisibilityBtn", function()
 	end)
 end)
 addButton(playerPage, "resetChar", function()
+	stopFly()
 	local hum = getHum()
 	if hum then hum.Health = 0 end
 end)
 addButton(playerPage, "refreshChar", function()
+	stopFly()
 	local root = getRoot()
 	local prevCF = root and root.CFrame
 	local hum = getHum()
@@ -1504,6 +1551,10 @@ end)
 addSection(worldPage, "secEnv")
 addSlider(worldPage, "gravity", 0, 400, math.floor(origGravity + 0.5), function(v)
 	Workspace.Gravity = v
+end)
+addButton(worldPage, "lowGravityBtn", function()
+	Workspace.Gravity = 15
+	notify(L("lowGravityToast"))
 end)
 addButton(worldPage, "resetGravity", function()
 	Workspace.Gravity = origGravity
@@ -1533,7 +1584,12 @@ addButton(worldPage, "resetWorld", function()
 	Lighting.ClockTime = origClockTime
 	restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows", "FogEnd" })
 	local cam = Workspace.CurrentCamera
-	if cam then cam.FieldOfView = 70 end
+	if cam then
+		cam.CameraType = Enum.CameraType.Custom
+		cam.FieldOfView = 70
+		local hum = getHum()
+		if hum then cam.CameraSubject = hum end
+	end
 	notify(L("worldResetToast"))
 end)
 
@@ -1544,6 +1600,17 @@ addButton(worldPage, "resetFov", function()
 	local cam = Workspace.CurrentCamera
 	if cam then cam.FieldOfView = 70 end
 	notify(L("fovResetToast"))
+end)
+addButton(worldPage, "resetCamBtn", function()
+	S.fov = nil
+	local cam = Workspace.CurrentCamera
+	local hum = getHum()
+	if cam then
+		cam.CameraType = Enum.CameraType.Custom
+		cam.FieldOfView = 70
+		if hum then cam.CameraSubject = hum end
+	end
+	notify(L("resetCamToast"))
 end)
 
 -- ---- MM2 ----
@@ -1593,6 +1660,21 @@ refreshRoleInfoUI = function()
 end
 
 bind(refreshRoleInfoUI)
+
+addButton(mm2Page, "copyTargetsBtn", function()
+	local mPlr = findMM2RolePlayer("murder")
+	local sPlr = findMM2RolePlayer("sheriff")
+	local parts = {}
+	if mPlr then table.insert(parts, "Murder: @" .. mPlr.Name) end
+	if sPlr then table.insert(parts, "Sheriff: @" .. sPlr.Name) end
+	if #parts == 0 then
+		notify(L("copyTargetsNone"))
+		return
+	end
+	local joined = table.concat(parts, " | ")
+	copyToClipboardSafe(joined)
+	notify(L("copyTargetsToast", joined))
+end)
 
 addToggle(mm2Page, "espMurder", "espMurderDesc", false, function(v)
 	S.espMurder = v
@@ -1783,7 +1865,7 @@ bind(function()
 end)
 
 addSection(settingsPage, "secVersionNotes")
-local notesRow = row(settingsPage, 138)
+local notesRow = row(settingsPage, 196)
 local notesLbl = new("TextLabel", {
 	Size = UDim2.new(1, -24, 1, -16),
 	Position = UDim2.new(0, 12, 0, 8),
@@ -1975,7 +2057,10 @@ unload = function()
 	S.fullbright, S.noShadows, S.noFog, S.fov = false, false, false, nil
 	restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows", "FogEnd", "ClockTime" })
 	Workspace.Gravity = origGravity
-	local hum = getHum()
+	local hum, root = getHum(), getRoot()
+	if root then
+		root.Anchored = false
+	end
 	if hum then
 		hum.WalkSpeed = origWalk
 		hum.JumpPower = origJump
