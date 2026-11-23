@@ -66,13 +66,24 @@ local I18N = {
 		infJumpDesc = "Saltar de nuevo en el aire",
 		noClip = "No Clip",
 		noClipDesc = "Caminar a través de paredes",
+		airWalk = "Air Walk",
+		airWalkDesc = "Mantiene una plataforma invisible bajo tus pies",
+		spinBot = "Spinbot",
+		spinBotDesc = "Gira el personaje continuamente",
+		spinSpeed = "Spin Speed",
+		antiRagdoll = "Anti-Ragdoll",
+		antiRagdollDesc = "Evita caídas o estados de ragdoll",
 		secFlight = "Vuelo",
 		fly = "Fly",
 		flyDesc = "Space/E subir, Q/Ctrl bajar (Vuelo suave)",
 		flyNoChar = "Fly: no se encontró personaje",
 		flySpeed = "Fly Speed",
 		secCharacter = "Personaje",
+		sitToggle = "Sit",
+		sitDesc = "Sentar o levantar al personaje",
 		resetChar = "Reiniciar Personaje",
+		refreshChar = "Refrescar Personaje",
+		refreshToast = "Refrescando personaje...",
 
 		secEnv = "Entorno",
 		gravity = "Gravedad",
@@ -81,8 +92,12 @@ local I18N = {
 		timeOfDay = "Hora del Día",
 		fullbright = "Fullbright",
 		fullbrightDesc = "Elimina la oscuridad y las sombras",
+		noShadows = "No Shadows",
+		noShadowsDesc = "Desactiva las sombras globales",
 		noFog = "Remove Fog",
 		noFogDesc = "Limpia la niebla a la distancia",
+		resetWorld = "Reiniciar Todo el Entorno",
+		worldResetToast = "Entorno reiniciado",
 		secCamera = "Cámara",
 		fov = "Field of View",
 		resetFov = "Reiniciar FOV",
@@ -105,6 +120,10 @@ local I18N = {
 		tagInnocent = " [INOCENTE]",
 		tagMurder = " [MURDER]",
 		tagSheriff = " [SHERIFF]",
+		tpSelected = "TP a Jugador Seleccionado",
+		spectateSelected = "Espectar Jugador Seleccionado",
+		spectateOnToast = "Espectando a %s",
+		spectateOffToast = "Cámara devuelta a tu personaje",
 		flingSelected = "Fling Jugador Seleccionado",
 
 		flingBusy = "Ya hay un fling en proceso",
@@ -119,6 +138,7 @@ local I18N = {
 		noGun = "No hay Gun caída en el mapa",
 		pickingGun = "Recogiendo Gun...",
 		backToPos = "Regresaste a tu posición",
+		tpDoneToast = "Teletransportado a %s",
 
 		secColorTheme = "Tema de Color",
 		themeToast = "Tema: %s",
@@ -145,7 +165,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.32: Actualización de versión general, optimización de código y estabilidad mejorada en movimiento.\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
+		versionNotesText = "• v2.32: Nuevas opciones en Player (Air Walk, Spinbot, Anti-Ragdoll, Sit, Refresh), World y MM2 (TP y Spectate).\n• v2.22.2: Desplazamiento fluido y Fly más estable.\n• v2.22.0: Fling multi-dirección para Murder, Sheriff y jugadores seleccionados.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -175,13 +195,24 @@ local I18N = {
 		infJumpDesc = "Jump again in mid-air",
 		noClip = "No Clip",
 		noClipDesc = "Walk through walls",
+		airWalk = "Air Walk",
+		airWalkDesc = "Keeps an invisible platform under your feet",
+		spinBot = "Spinbot",
+		spinBotDesc = "Spins your character continuously",
+		spinSpeed = "Spin Speed",
+		antiRagdoll = "Anti-Ragdoll",
+		antiRagdollDesc = "Prevents falling or ragdoll states",
 		secFlight = "Flight",
 		fly = "Fly",
 		flyDesc = "Space/E up, Q/Ctrl down (Smooth flight)",
 		flyNoChar = "Fly: no character found",
 		flySpeed = "Fly Speed",
 		secCharacter = "Character",
+		sitToggle = "Sit",
+		sitDesc = "Sit or stand your character",
 		resetChar = "Reset Character",
+		refreshChar = "Refresh Character",
+		refreshToast = "Refreshing character...",
 
 		secEnv = "Environment",
 		gravity = "Gravity",
@@ -190,8 +221,12 @@ local I18N = {
 		timeOfDay = "Time of Day",
 		fullbright = "Fullbright",
 		fullbrightDesc = "Removes darkness and shadows",
+		noShadows = "No Shadows",
+		noShadowsDesc = "Disables global shadows",
 		noFog = "Remove Fog",
 		noFogDesc = "Clears distance fog",
+		resetWorld = "Reset All Environment",
+		worldResetToast = "Environment reset",
 		secCamera = "Camera",
 		fov = "Field of View",
 		resetFov = "Reset FOV",
@@ -214,6 +249,10 @@ local I18N = {
 		tagInnocent = " [INNOCENT]",
 		tagMurder = " [MURDER]",
 		tagSheriff = " [SHERIFF]",
+		tpSelected = "TP to Selected Player",
+		spectateSelected = "Spectate Selected Player",
+		spectateOnToast = "Spectating %s",
+		spectateOffToast = "Camera returned to your character",
 		flingSelected = "Fling Selected Player",
 
 		flingBusy = "A fling is already in progress",
@@ -228,6 +267,7 @@ local I18N = {
 		noGun = "No dropped Gun found on the map",
 		pickingGun = "Picking up Gun...",
 		backToPos = "Returned to your position",
+		tpDoneToast = "Teleported to %s",
 
 		secColorTheme = "Color Theme",
 		themeToast = "Theme: %s",
@@ -254,7 +294,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.32: General version update, code optimization and improved movement stability.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
+		versionNotesText = "• v2.32: Added Player options (Air Walk, Spinbot, Anti-Ragdoll, Sit, Refresh), World options and MM2 TP & Spectate.\n• v2.22.2: Smooth movement and steadier Fly.\n• v2.22.0: Multi-angle fling for Murder, Sheriff, and selected players.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -416,9 +456,14 @@ local S = {
 	jumpOn = false, jump = 100,
 	infJump = false,
 	noclip = false,
+	airWalk = false,
+	spinBot = false, spinSpeed = 18,
+	antiRagdoll = false,
+	sit = false,
 	fly = false, flySpeed = 45,
 	fov = nil,
 	fullbright = false,
+	noShadows = false,
 	noFog = false,
 	antiAfk = true,
 	rainbow = false,
@@ -440,12 +485,14 @@ local startHum = getHum()
 local origWalk = startHum and startHum.WalkSpeed or 16
 local origJump = startHum and startHum.JumpPower or 50
 local origGravity = Workspace.Gravity
+local origClockTime = Lighting.ClockTime
 local lightOrig = {
 	Brightness = Lighting.Brightness,
 	Ambient = Lighting.Ambient,
 	OutdoorAmbient = Lighting.OutdoorAmbient,
 	GlobalShadows = Lighting.GlobalShadows,
 	FogEnd = Lighting.FogEnd,
+	ClockTime = Lighting.ClockTime,
 }
 local function restoreLight(keys)
 	for _, k in ipairs(keys) do
@@ -525,6 +572,25 @@ local function restoreNoclip()
 	table.clear(noclipChanged)
 end
 
+-- Air Walk invisible platform
+local airPart = new("Part", {
+	Name = "KingOS_AirWalk",
+	Size = Vector3.new(6, 0.6, 6),
+	Anchored = true,
+	CanCollide = false,
+	Transparency = 1,
+}, Workspace)
+
+local function updateAirWalk()
+	local root = getRoot()
+	if S.airWalk and root and not S.fly then
+		airPart.CanCollide = true
+		airPart.CFrame = CFrame.new(root.Position.X, root.Position.Y - 3.35, root.Position.Z)
+	else
+		airPart.CanCollide = false
+	end
+end
+
 track(RunService.Stepped:Connect(function()
 	if S.noclip or S.fly then
 		local c = player.Character
@@ -537,6 +603,7 @@ track(RunService.Stepped:Connect(function()
 			end
 		end
 	end
+	updateAirWalk()
 end))
 
 track(UserInputService.JumpRequest:Connect(function()
@@ -579,6 +646,14 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
+	-- Spinbot
+	if S.spinBot and not S.fly then
+		local root = getRoot()
+		if root then
+			root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(S.spinSpeed * 20) * math.min(dt, 0.05), 0)
+		end
+	end
+
 	-- Vuelo fluido controlado por CFrame + velocidad limpia
 	if S.fly then
 		local root, hum = getRoot(), getHum()
@@ -617,11 +692,23 @@ track(RunService.Heartbeat:Connect(function()
 			hum.UseJumpPower = true
 			hum.JumpPower = S.jump
 		end
+		if S.antiRagdoll then
+			hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+			hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+			if not S.fly then
+				hum.PlatformStand = false
+			end
+		end
+		if S.sit and not hum.Sit then
+			hum.Sit = true
+		end
 	end
 	if S.fullbright then
 		Lighting.Brightness = 2
 		Lighting.Ambient = Color3.fromRGB(190, 190, 190)
 		Lighting.OutdoorAmbient = Color3.fromRGB(190, 190, 190)
+		Lighting.GlobalShadows = false
+	elseif S.noShadows then
 		Lighting.GlobalShadows = false
 	end
 	if S.noFog then
@@ -941,6 +1028,61 @@ local function teleportToGunAndBack()
 	end
 	tpGunBusy = false
 	notify(L("backToPos"))
+end
+
+local spectatingTarget = nil
+local function stopSpectate(silent)
+	spectatingTarget = nil
+	local cam = Workspace.CurrentCamera
+	local hum = getHum()
+	if cam and hum then
+		cam.CameraType = Enum.CameraType.Custom
+		cam.CameraSubject = hum
+	end
+	if not silent then
+		notify(L("spectateOffToast"))
+	end
+end
+
+local function toggleSpectate(targetPlr)
+	if spectatingTarget == targetPlr then
+		stopSpectate(false)
+		return
+	end
+	if not targetPlr or not targetPlr.Parent or targetPlr == player then
+		notify(L("noSelectedPlayer"))
+		return
+	end
+	local tHum = targetPlr.Character and targetPlr.Character:FindFirstChildOfClass("Humanoid")
+	local cam = Workspace.CurrentCamera
+	if not tHum or not cam then
+		notify(L("flingNoTargetChar"))
+		return
+	end
+	spectatingTarget = targetPlr
+	cam.CameraType = Enum.CameraType.Custom
+	cam.CameraSubject = tHum
+	notify(L("spectateOnToast", targetPlr.DisplayName))
+end
+
+local function teleportToPlayer(targetPlr)
+	if not targetPlr or not targetPlr.Parent or targetPlr == player then
+		notify(L("noSelectedPlayer"))
+		return
+	end
+	local tRoot = targetPlr.Character and targetPlr.Character:FindFirstChild("HumanoidRootPart")
+	local myRoot = getRoot()
+	if not tRoot then
+		notify(L("flingNoTargetChar"))
+		return
+	end
+	if not myRoot then
+		notify(L("flingNoMyChar"))
+		return
+	end
+	myRoot.AssemblyLinearVelocity = Vector3.zero
+	myRoot.CFrame = tRoot.CFrame + Vector3.new(0, 2, -3)
+	notify(L("tpDoneToast", targetPlr.DisplayName))
 end
 
 -- ====================== MAIN PANEL ======================
@@ -1446,6 +1588,22 @@ addToggle(playerPage, "noClip", "noClipDesc", false, function(v)
 	S.noclip = v
 	if not v and not S.fly then restoreNoclip() end
 end)
+addToggle(playerPage, "airWalk", "airWalkDesc", false, function(v)
+	S.airWalk = v
+	if not v then airPart.CanCollide = false end
+end)
+addToggle(playerPage, "spinBot", "spinBotDesc", false, function(v)
+	S.spinBot = v
+end)
+addSlider(playerPage, "spinSpeed", 1, 100, S.spinSpeed, function(v) S.spinSpeed = v end)
+addToggle(playerPage, "antiRagdoll", "antiRagdollDesc", false, function(v)
+	S.antiRagdoll = v
+	local hum = getHum()
+	if hum then
+		hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, not v)
+		hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, not v)
+	end
+end)
 
 addSection(playerPage, "secFlight")
 local flyPad
@@ -1463,9 +1621,34 @@ end)
 addSlider(playerPage, "flySpeed", 10, 200, S.flySpeed, function(v) S.flySpeed = v end)
 
 addSection(playerPage, "secCharacter")
+addToggle(playerPage, "sitToggle", "sitDesc", false, function(v)
+	S.sit = v
+	local hum = getHum()
+	if hum then hum.Sit = v end
+end)
 addButton(playerPage, "resetChar", function()
 	local hum = getHum()
 	if hum then hum.Health = 0 end
+end)
+addButton(playerPage, "refreshChar", function()
+	local root = getRoot()
+	local prevCF = root and root.CFrame
+	local hum = getHum()
+	if hum then
+		notify(L("refreshToast"))
+		hum.Health = 0
+		if prevCF then
+			local conn
+			conn = player.CharacterAdded:Connect(function(newChar)
+				if conn then conn:Disconnect() end
+				local newRoot = newChar:WaitForChild("HumanoidRootPart", 5)
+				if newRoot then
+					task.wait(0.1)
+					newRoot.CFrame = prevCF
+				end
+			end)
+		end
+	end
 end)
 
 -- ---- World ----
@@ -1484,9 +1667,25 @@ addToggle(worldPage, "fullbright", "fullbrightDesc", false, function(v)
 	S.fullbright = v
 	if not v then restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows" }) end
 end)
+addToggle(worldPage, "noShadows", "noShadowsDesc", false, function(v)
+	S.noShadows = v
+	if not v and not S.fullbright then restoreLight({ "GlobalShadows" }) end
+end)
 addToggle(worldPage, "noFog", "noFogDesc", false, function(v)
 	S.noFog = v
 	if not v then restoreLight({ "FogEnd" }) end
+end)
+addButton(worldPage, "resetWorld", function()
+	S.fullbright = false
+	S.noShadows = false
+	S.noFog = false
+	S.fov = nil
+	Workspace.Gravity = origGravity
+	Lighting.ClockTime = origClockTime
+	restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows", "FogEnd" })
+	local cam = Workspace.CurrentCamera
+	if cam then cam.FieldOfView = 70 end
+	notify(L("worldResetToast"))
 end)
 
 addSection(worldPage, "secCamera")
@@ -1566,6 +1765,9 @@ refreshPlayerListUI = function()
 	end
 
 	if selectedPlayer and not selectedPlayer.Parent then
+		if spectatingTarget == selectedPlayer then
+			stopSpectate(true)
+		end
 		selectedPlayer = nil
 	end
 
@@ -1616,6 +1818,24 @@ refreshPlayerListUI = function()
 		end)
 	end
 end
+
+addButton(mm2Page, "tpSelected", function()
+	if not selectedPlayer or not selectedPlayer.Parent then
+		refreshPlayerListUI()
+		notify(L("noSelectedPlayer"))
+		return
+	end
+	teleportToPlayer(selectedPlayer)
+end)
+
+addButton(mm2Page, "spectateSelected", function()
+	if not selectedPlayer or not selectedPlayer.Parent then
+		refreshPlayerListUI()
+		notify(L("noSelectedPlayer"))
+		return
+	end
+	toggleSpectate(selectedPlayer)
+end)
 
 addButton(mm2Page, "flingSelected", function()
 	if not selectedPlayer or not selectedPlayer.Parent then
@@ -1965,22 +2185,32 @@ end))
 
 -- ====================== UNLOAD ======================
 unload = function()
+	stopSpectate(true)
 	S.fly = false
 	stopFly()
 	S.noclip = false
+	S.airWalk = false
+	S.spinBot = false
+	S.antiRagdoll = false
+	S.sit = false
+	airPart.CanCollide = false
+	pcall(function() airPart:Destroy() end)
 	restoreNoclip()
 	S.espMurder = false
 	S.espSheriff = false
 	S.espInnocent = false
 	clearAllEsp()
-	S.fullbright, S.noFog, S.fov = false, false, nil
-	restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows", "FogEnd" })
+	S.fullbright, S.noShadows, S.noFog, S.fov = false, false, false, nil
+	restoreLight({ "Brightness", "Ambient", "OutdoorAmbient", "GlobalShadows", "FogEnd", "ClockTime" })
 	Workspace.Gravity = origGravity
 	local hum = getHum()
 	if hum then
 		hum.WalkSpeed = origWalk
 		hum.JumpPower = origJump
 		hum.PlatformStand = false
+		hum.Sit = false
+		hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+		hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
 	end
 	for _, c in ipairs(conns) do
 		pcall(function() c:Disconnect() end)
