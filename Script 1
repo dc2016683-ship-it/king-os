@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro v2.2 | For Delta
+	KingOS Universal Pro v2.4 | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "v2.2"
+local VERSION = "v2.4"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -209,6 +209,7 @@ local toastHolder = new("Frame", {
 	Size = UDim2.new(0, 260, 1, -20),
 	Position = UDim2.new(0, 14, 0, 10),
 	BackgroundTransparency = 1,
+	ZIndex = 20,
 }, gui)
 new("UIListLayout", {
 	VerticalAlignment = Enum.VerticalAlignment.Bottom,
@@ -222,6 +223,7 @@ local function notify(text)
 		BackgroundColor3 = T.bg2,
 		GroupTransparency = 1,
 		LayoutOrder = nextOrder(),
+		ZIndex = 21,
 	}, toastHolder)
 	corner(f, 10)
 	local st = stroke(f, 1.2)
@@ -531,8 +533,7 @@ local function flingRole(role)
 		end
 	end
 
-	-- Alta velocidad angular segura en Luau (sin overflow/NaN) para lanzar al objetivo
-	local spinSpeed = 5e5
+	local spinSpeed = 1e6
 	local bv = new("BodyVelocity", {
 		MaxForce = Vector3.new(1e9, 1e9, 1e9),
 		Velocity = Vector3.zero,
@@ -545,7 +546,8 @@ local function flingRole(role)
 
 	notify("Flinging " .. targetPlr.DisplayName .. "...")
 	local elapsed = 0
-	while elapsed < 1.35 do
+	local orbitAngle = 0
+	while elapsed < 1.5 do
 		local dt = RunService.Heartbeat:Wait()
 		elapsed += dt
 		if not targetHrp or not targetHrp.Parent or not myRoot or not myRoot.Parent then
@@ -555,10 +557,24 @@ local function flingRole(role)
 		if tHum and tHum.Health <= 0 then
 			break
 		end
-		-- Pegarse cerca al objetivo mientras gira
-		myRoot.CFrame = targetHrp.CFrame * CFrame.new(0, 0, -1.2)
-		bv.Velocity = (targetHrp.Position - myRoot.Position) * 18
-		bav.AngularVelocity = Vector3.new(0, spinSpeed, 0)
+
+		orbitAngle += dt * 28
+		local radius = 2.1
+		local offset = Vector3.new(math.cos(orbitAngle) * radius, math.sin(orbitAngle * 0.5) * 0.6, math.sin(orbitAngle) * radius)
+		local orbitPos = targetHrp.Position + offset
+		myRoot.CFrame = CFrame.new(orbitPos, targetHrp.Position) * CFrame.Angles(0, orbitAngle * 4, 0)
+
+		local pushDir = (targetHrp.Position - myRoot.Position)
+		if pushDir.Magnitude > 0.01 then
+			pushDir = pushDir.Unit
+		else
+			pushDir = Vector3.new(1, 0, 0)
+		end
+		local launchVel = (pushDir * 140) + Vector3.new(0, 120, 0)
+		bv.Velocity = launchVel
+		bav.AngularVelocity = Vector3.new(spinSpeed * 0.25, spinSpeed, spinSpeed * 0.25)
+		myRoot.AssemblyLinearVelocity = launchVel
+		myRoot.AssemblyAngularVelocity = Vector3.new(0, spinSpeed, 0)
 	end
 
 	if bv then bv:Destroy() end
@@ -642,6 +658,7 @@ local main = new("CanvasGroup", {
 	Active = true,
 	Visible = false,
 	GroupTransparency = 1,
+	ZIndex = 10,
 }, gui)
 corner(main, 16)
 local uiScale = new("UIScale", { Scale = 1 }, main)
@@ -762,7 +779,7 @@ local hintLbl = new("TextLabel", {
 	Size = UDim2.new(0.5, -12, 0, FOOTER_H),
 	Position = UDim2.new(0.5, 0, 1, -FOOTER_H),
 	BackgroundTransparency = 1,
-	Text = "RightShift: hide / show",
+	Text = "Toca K para ocultar/mostrar",
 	Font = Enum.Font.Gotham,
 	TextSize = 11,
 	TextXAlignment = Enum.TextXAlignment.Right,
@@ -1266,7 +1283,7 @@ local infoLbl = new("TextLabel", {
 	Size = UDim2.new(1, -24, 1, -16),
 	Position = UDim2.new(0, 12, 0, 8),
 	BackgroundTransparency = 1,
-	Text = "KingOS Universal Pro " .. VERSION .. "\nOWN GAME BY KING OS\n\nRightShift or the K button hides/shows the panel. Drag the header to move it.",
+	Text = "KingOS Universal Pro " .. VERSION .. "\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 	Font = Enum.Font.Gotham,
 	TextSize = 12,
 	TextWrapped = true,
@@ -1281,6 +1298,7 @@ flyPad = new("Frame", {
 	Position = UDim2.new(1, -76, 0.5, -64),
 	BackgroundTransparency = 1,
 	Visible = false,
+	ZIndex = 12,
 }, gui)
 local function padButton(text, y, setter)
 	local b = new("TextButton", {
@@ -1332,24 +1350,57 @@ end
 
 -- ====================== FLOATING "K" BUTTON ======================
 local floatBtn = new("TextButton", {
-	Size = UDim2.new(0, 46, 0, 46),
-	Position = UDim2.new(0, 10, 0.5, -23),
+	Size = UDim2.new(0, 54, 0, 54),
+	Position = UDim2.new(0, 16, 0.35, 0),
 	Text = "K",
 	Font = Enum.Font.GothamBlack,
-	TextSize = 22,
+	TextSize = 24,
 	AutoButtonColor = false,
-	Visible = false,
+	Visible = true,
+	ZIndex = 15,
 }, gui)
-corner(floatBtn, 23)
-local floatStroke = stroke(floatBtn, 2)
+corner(floatBtn, 27)
+local floatStroke = stroke(floatBtn, 2.5)
 bind(function()
 	floatBtn.BackgroundColor3 = T.bg
 	floatBtn.TextColor3 = T.accent
 	floatStroke.Color = T.accent
 end)
-floatBtn.MouseButton1Click:Connect(function()
-	setOpen(not opened)
-end)
+
+-- Arrastrable en móvil/PC sin interferir con el toque para abrir/cerrar
+do
+	local btnDragging, btnMoved = false, false
+	local btnDragStart, btnStartPos = nil, nil
+	floatBtn.InputBegan:Connect(function(input)
+		if isPointer(input) then
+			btnDragging = true
+			btnMoved = false
+			btnDragStart = input.Position
+			btnStartPos = floatBtn.Position
+		end
+	end)
+	track(UserInputService.InputChanged:Connect(function(input)
+		if btnDragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+			or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - btnDragStart
+			if delta.Magnitude > 8 then
+				btnMoved = true
+			end
+			floatBtn.Position = UDim2.new(
+				btnStartPos.X.Scale, btnStartPos.X.Offset + delta.X,
+				btnStartPos.Y.Scale, btnStartPos.Y.Offset + delta.Y
+			)
+		end
+	end))
+	floatBtn.InputEnded:Connect(function(input)
+		if btnDragging and isPointer(input) then
+			btnDragging = false
+			if not btnMoved then
+				setOpen(not opened)
+			end
+		end
+	end)
+end
 
 -- ====================== HEADER BEHAVIOR ======================
 minBtn.MouseButton1Click:Connect(function()
@@ -1364,7 +1415,7 @@ minBtn.MouseButton1Click:Connect(function()
 end)
 closeBtn.MouseButton1Click:Connect(function()
 	setOpen(false)
-	notify("Hidden. Tap K or press RightShift")
+	notify("Oculto. Toca el botón K para abrir")
 end)
 
 track(UserInputService.InputBegan:Connect(function(input, processed)
@@ -1432,6 +1483,7 @@ local card = new("CanvasGroup", {
 	Position = UDim2.new(0.5, 0, 0.5, 0),
 	BackgroundColor3 = T.bg,
 	GroupTransparency = 1,
+	ZIndex = 25,
 }, gui)
 corner(card, 16)
 local cardStroke = stroke(card, 2)
