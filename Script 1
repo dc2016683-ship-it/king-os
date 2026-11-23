@@ -1,5 +1,5 @@
 --[[
-	KingOS Universal Pro2 (2.32) DeLuX | For Delta
+	KingOS Universal DeLuX Pro (2.32) | For Delta
 	OWN GAME BY KING OS
 
 	Tabs: Player, World, MM2, Themes, Settings
@@ -28,7 +28,7 @@ if playerGui:FindFirstChild("KingOS") then
 	playerGui.KingOS:Destroy()
 end
 
-local VERSION = "Pro2 (2.32) DeLuX"
+local VERSION = "DeLuX Pro (2.32)"
 local HEADER_H = 46
 local FOOTER_H = 26
 
@@ -46,6 +46,7 @@ end)
 
 local I18N = {
 	es = {
+		headerTitleFmt = "KingOS (Number of players using script: %d)",
 		subTitle = "Universal Pro  •  %s  •  By KING OS",
 		statsFmt = "FPS %d  •  Ping %d ms",
 		toggleHint = "Toca K para ocultar/mostrar",
@@ -59,6 +60,9 @@ local I18N = {
 		speedBoost = "Speed Boost",
 		speedBoostDesc = "Sobrescribe la velocidad al caminar",
 		walkSpeed = "Walk Speed",
+		velEditToggle = "Edit de Vel",
+		velEditDesc = "Edita y mantiene tu velocidad (Vel) activa",
+		velSpeedSlider = "Vel Speed",
 		highJump = "High Jump",
 		highJumpDesc = "Sobrescribe la fuerza de salto",
 		jumpPower = "Jump Power",
@@ -157,7 +161,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• Pro2 (2.32) DeLuX: Se corrigió el descenso rápido en Fly, se añadió Gravedad Baja (15), Reiniciar Cámara y Copiar Usuario Murder/Sheriff.",
+		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios con el script.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -167,6 +171,7 @@ local I18N = {
 		loadedToast = "KingOS %s cargado",
 	},
 	en = {
+		headerTitleFmt = "KingOS (Number of players using script: %d)",
 		subTitle = "Universal Pro  •  %s  •  By KING OS",
 		statsFmt = "FPS %d  •  Ping %d ms",
 		toggleHint = "Tap K to hide/show",
@@ -180,6 +185,9 @@ local I18N = {
 		speedBoost = "Speed Boost",
 		speedBoostDesc = "Override walk speed",
 		walkSpeed = "Walk Speed",
+		velEditToggle = "Vel Edit",
+		velEditDesc = "Edit and lock your velocity speed (Vel)",
+		velSpeedSlider = "Vel Speed",
 		highJump = "High Jump",
 		highJumpDesc = "Override jump power",
 		jumpPower = "Jump Power",
@@ -278,7 +286,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• Pro2 (2.32) DeLuX: Fixed fast downward drop in Fly, added Low Gravity (15), Reset Camera, and Copy Murder/Sheriff Username.",
+		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and script user count.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -434,9 +442,37 @@ local function getPing()
 	return ok and math.floor(v) or 0
 end
 
+local function hasKingOSMarker(obj)
+	if not obj then return false end
+	if obj:GetAttribute("KingOS_Active") == true then
+		return true
+	end
+	if obj:FindFirstChild("KingOS_Marker", true) then
+		return true
+	end
+	return false
+end
+
+local function getScriptUsersCount()
+	local count = 0
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= player then
+			local found = hasKingOSMarker(plr)
+				or hasKingOSMarker(plr.Character)
+				or hasKingOSMarker(plr:FindFirstChild("PlayerGui"))
+				or hasKingOSMarker(plr:FindFirstChild("Backpack"))
+			if found then
+				count += 1
+			end
+		end
+	end
+	return count > 0 and 1 or 0
+end
+
 -- ====================== STATE ======================
 local S = {
 	speedOn = false, speed = 50,
+	velEditOn = false, velSpeed = 65,
 	jumpOn = false, jump = 100,
 	infJump = false,
 	noclip = false,
@@ -494,6 +530,11 @@ local gui = new("ScreenGui", {
 	DisplayOrder = 999,
 	IgnoreGuiInset = true,
 }, playerGui)
+
+pcall(function()
+	player:SetAttribute("KingOS_Active", true)
+	new("BoolValue", { Name = "KingOS_Marker", Value = true }, player)
+end)
 
 -- ====================== NOTIFICATIONS ======================
 local toastHolder = new("Frame", {
@@ -735,7 +776,19 @@ track(RunService.Heartbeat:Connect(function()
 	end
 
 	if hum then
-		if S.speedOn then
+		if S.velEditOn then
+			hum.WalkSpeed = S.velSpeed
+			if root and not S.fly and hum.MoveDirection.Magnitude > 0 then
+				local flatDir = Vector3.new(hum.MoveDirection.X, 0, hum.MoveDirection.Z)
+				if flatDir.Magnitude > 0 then
+					root.AssemblyLinearVelocity = Vector3.new(
+						flatDir.Unit.X * S.velSpeed,
+						root.AssemblyLinearVelocity.Y,
+						flatDir.Unit.Z * S.velSpeed
+					)
+				end
+			end
+		elseif S.speedOn then
 			hum.WalkSpeed = S.speed
 		end
 		if S.jumpOn then
@@ -1011,16 +1064,17 @@ bind(function()
 end)
 
 local titleLbl = new("TextLabel", {
-	Size = UDim2.new(1, -170, 0, 20),
+	Size = UDim2.new(1, -150, 0, 20),
 	Position = UDim2.new(0, 52, 0, 6),
 	BackgroundTransparency = 1,
-	Text = "KingOS",
+	Text = L("headerTitleFmt", getScriptUsersCount()),
 	Font = Enum.Font.GothamBold,
-	TextSize = 17,
+	TextSize = 14,
 	TextXAlignment = Enum.TextXAlignment.Left,
+	TextTruncate = Enum.TextTruncate.AtEnd,
 }, topBar)
 local subLbl = new("TextLabel", {
-	Size = UDim2.new(1, -170, 0, 14),
+	Size = UDim2.new(1, -150, 0, 14),
 	Position = UDim2.new(0, 52, 0, 26),
 	BackgroundTransparency = 1,
 	Text = L("subTitle", VERSION),
@@ -1030,8 +1084,18 @@ local subLbl = new("TextLabel", {
 }, topBar)
 bind(function()
 	titleLbl.TextColor3 = T.text
+	titleLbl.Text = L("headerTitleFmt", getScriptUsersCount())
 	subLbl.TextColor3 = T.gray
 	subLbl.Text = L("subTitle", VERSION)
+end)
+
+task.spawn(function()
+	while gui.Parent do
+		pcall(function()
+			titleLbl.Text = L("headerTitleFmt", getScriptUsersCount())
+		end)
+		task.wait(1)
+	end
 end)
 
 local function topButton(text, xOffset)
@@ -1439,12 +1503,34 @@ local settingsPage = createPage("Settings", "⚙", "tabSettings")
 addSection(playerPage, "secMovement")
 addToggle(playerPage, "speedBoost", "speedBoostDesc", false, function(v)
 	S.speedOn = v
-	if not v then
+	if not v and not S.velEditOn then
 		local hum = getHum()
 		if hum then hum.WalkSpeed = origWalk end
 	end
 end)
 addSlider(playerPage, "walkSpeed", 1, 300, S.speed, function(v) S.speed = v end)
+
+addToggle(playerPage, "velEditToggle", "velEditDesc", false, function(v)
+	S.velEditOn = v
+	local hum, root = getHum(), getRoot()
+	if v then
+		if hum then hum.WalkSpeed = S.velSpeed end
+	else
+		if root and root.Parent then
+			root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+		end
+		if hum then
+			hum.WalkSpeed = S.speedOn and S.speed or origWalk
+		end
+	end
+end)
+addSlider(playerPage, "velSpeedSlider", 1, 300, S.velSpeed, function(v)
+	S.velSpeed = v
+	if S.velEditOn then
+		local hum = getHum()
+		if hum then hum.WalkSpeed = v end
+	end
+end)
 
 addToggle(playerPage, "highJump", "highJumpDesc", false, function(v)
 	S.jumpOn = v
@@ -1865,7 +1951,7 @@ bind(function()
 end)
 
 addSection(settingsPage, "secVersionNotes")
-local notesRow = row(settingsPage, 196)
+local notesRow = row(settingsPage, 206)
 local notesLbl = new("TextLabel", {
 	Size = UDim2.new(1, -24, 1, -16),
 	Position = UDim2.new(0, 12, 0, 8),
@@ -2039,9 +2125,15 @@ end))
 
 -- ====================== UNLOAD ======================
 unload = function()
+	pcall(function()
+		player:SetAttribute("KingOS_Active", nil)
+		local m = player:FindFirstChild("KingOS_Marker")
+		if m then m:Destroy() end
+	end)
 	stopFlingSpin()
 	S.fly = false
 	stopFly()
+	S.velEditOn = false
 	S.noclip = false
 	S.airWalk = false
 	S.spinBot = false
@@ -2060,6 +2152,7 @@ unload = function()
 	local hum, root = getHum(), getRoot()
 	if root then
 		root.Anchored = false
+		root.AssemblyLinearVelocity = Vector3.zero
 	end
 	if hum then
 		hum.WalkSpeed = origWalk
