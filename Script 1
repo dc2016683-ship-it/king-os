@@ -20,6 +20,8 @@ local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
 local Workspace = game:GetService("Workspace")
 local Stats = game:GetService("Stats")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CollectionService = game:GetService("CollectionService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -161,7 +163,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios con el script.",
+		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios vía API del juego.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -286,7 +288,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and script user count.",
+		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and game API script user count.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -442,6 +444,48 @@ local function getPing()
 	return ok and math.floor(v) or 0
 end
 
+-- ====================== GAME API USER DETECTION ======================
+local seenApiUsers = {}
+local kingFolder = ReplicatedStorage:FindFirstChild("KingOS_Net")
+if not kingFolder then
+	kingFolder = Instance.new("Folder")
+	kingFolder.Name = "KingOS_Net"
+	pcall(function()
+		kingFolder.Parent = ReplicatedStorage
+	end)
+end
+
+local pingRemote = kingFolder and kingFolder:FindFirstChild("KingOS_Ping")
+if not pingRemote then
+	pingRemote = Instance.new("RemoteEvent")
+	pingRemote.Name = "KingOS_Ping"
+	pcall(function()
+		pingRemote.Parent = kingFolder
+	end)
+end
+
+local function markUserActive(plr)
+	if plr and plr ~= player then
+		seenApiUsers[plr.UserId] = os.clock()
+	end
+end
+
+if pingRemote and pingRemote:IsA("RemoteEvent") then
+	track(pingRemote.OnClientEvent:Connect(function(senderUserId)
+		if type(senderUserId) == "number" and senderUserId ~= player.UserId then
+			seenApiUsers[senderUserId] = os.clock()
+		end
+	end))
+	pcall(function()
+		pingRemote:FireServer(player.UserId)
+		pingRemote:FireAllClients(player.UserId)
+	end)
+end
+
+pcall(function()
+	CollectionService:AddTag(player, "KingOS_User")
+end)
+
 local function hasKingOSMarker(obj)
 	if not obj then return false end
 	if obj:GetAttribute("KingOS_Active") == true then
@@ -454,19 +498,30 @@ local function hasKingOSMarker(obj)
 end
 
 local function getScriptUsersCount()
-	local count = 0
+	local now = os.clock()
+	local activeOther = false
+
 	for _, plr in ipairs(Players:GetPlayers()) do
 		if plr ~= player then
-			local found = hasKingOSMarker(plr)
+			local tagged = false
+			pcall(function()
+				tagged = CollectionService:HasTag(plr, "KingOS_User")
+			end)
+			local recentPing = (seenApiUsers[plr.UserId] ~= nil) and ((now - seenApiUsers[plr.UserId]) < 6)
+			local marked = tagged
+				or recentPing
+				or hasKingOSMarker(plr)
 				or hasKingOSMarker(plr.Character)
 				or hasKingOSMarker(plr:FindFirstChild("PlayerGui"))
 				or hasKingOSMarker(plr:FindFirstChild("Backpack"))
-			if found then
-				count += 1
+			if marked then
+				activeOther = true
+				break
 			end
 		end
 	end
-	return count > 0 and 1 or 0
+
+	return activeOther and 1 or 0
 end
 
 -- ====================== STATE ======================
@@ -1089,11 +1144,29 @@ bind(function()
 	subLbl.Text = L("subTitle", VERSION)
 end)
 
+local function syncScriptUserCounter()
+	pcall(function()
+		if pingRemote and pingRemote:IsA("RemoteEvent") then
+			pingRemote:FireServer(player.UserId)
+			pingRemote:FireAllClients(player.UserId)
+		end
+	end)
+	pcall(function()
+		titleLbl.Text = L("headerTitleFmt", getScriptUsersCount())
+	end)
+end
+
+track(Players.PlayerAdded:Connect(function()
+	task.defer(syncScriptUserCounter)
+end))
+track(Players.PlayerRemoving:Connect(function(plr)
+	seenApiUsers[plr.UserId] = nil
+	task.defer(syncScriptUserCounter)
+end))
+
 task.spawn(function()
 	while gui.Parent do
-		pcall(function()
-			titleLbl.Text = L("headerTitleFmt", getScriptUsersCount())
-		end)
+		syncScriptUserCounter()
 		task.wait(1)
 	end
 end)
@@ -2129,6 +2202,7 @@ unload = function()
 		player:SetAttribute("KingOS_Active", nil)
 		local m = player:FindFirstChild("KingOS_Marker")
 		if m then m:Destroy() end
+		CollectionService:RemoveTag(player, "KingOS_User")
 	end)
 	stopFlingSpin()
 	S.fly = false
