@@ -2,7 +2,7 @@
 	KingOS Universal Pro v2.22.1 Beta | For Delta
 	OWN GAME BY KING OS
 
-	Tabs: Player, World, MM2, Themes, Settings
+	Tabs: Player, World, MM2, Guerra Subterranea, Themes, Settings
 	Hide/show the panel: RightShift or the round "K" button
 ]]
 
@@ -52,6 +52,7 @@ local I18N = {
 		tabPlayer = "Player",
 		tabWorld = "World",
 		tabMM2 = "MM2",
+		tabSubWar = "Guerra Subterranea 🗡️",
 		tabThemes = "Themes",
 		tabSettings = "Settings",
 
@@ -68,7 +69,7 @@ local I18N = {
 		noClipDesc = "Caminar a través de paredes",
 		secFlight = "Vuelo",
 		fly = "Fly",
-		flyDesc = "Space/E subir, Q/Ctrl bajar",
+		flyDesc = "Space/E subir, Q/Ctrl bajar (Detecta Place 16/17)",
 		flyNoChar = "Fly: no se encontró personaje",
 		flySpeed = "Fly Speed",
 		secCharacter = "Personaje",
@@ -106,6 +107,18 @@ local I18N = {
 		tagMurder = " [MURDER]",
 		tagSheriff = " [SHERIFF]",
 		flingSelected = "Fling Jugador Seleccionado",
+
+		secSubWar = "Guerra Subterránea 🗡️",
+		subWarStatus = "Estado del Juego: %s",
+		subWarDetected = "Detectado Place %d (Modo Subterráneo Activo)",
+		subWarOtherPlace = "Place actual: %d (También disponible manual)",
+		underGroundMode = "Ir Debajo del Suelo",
+		underGroundDesc = "Baja bajo el suelo; tú te ves y evitas ataques normales",
+		underDepth = "Profundidad Bajo Suelo",
+		appearBtn = "Aparecer",
+		subWarEnterToast = "Bajaste debajo del suelo (tú sigues visible)",
+		subWarAppearToast = "Volviste a aparecer en la superficie",
+		subWarFlyAutoToast = "Place %d detectado: Fly subterráneo activado",
 
 		flingBusy = "Ya hay un fling en proceso",
 		flingInvalidTarget = "Selecciona un jugador válido",
@@ -145,7 +158,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.22.1 Beta: Actualización de compilación Beta y ajustes generales de estabilidad.\n• v2.22.0: Fling multi-dirección con giro en todos los ejes para Murder, Sheriff y jugadores seleccionados.\n• v2.22: Botones de idioma Español / English en Settings y traducción de interfaz.",
+		versionNotesText = "• v2.22.1 Beta: Pestaña Guerra Subterránea 🗡️ con detección de Place 16/17, modo bajo suelo visible para ti y botón Aparecer.\n• v2.22.0: Fling multi-dirección con giro en todos los ejes para Murder, Sheriff y jugadores seleccionados.\n• v2.22: Botones de idioma Español / English en Settings y traducción de interfaz.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -161,6 +174,7 @@ local I18N = {
 		tabPlayer = "Player",
 		tabWorld = "World",
 		tabMM2 = "MM2",
+		tabSubWar = "Underground War 🗡️",
 		tabThemes = "Themes",
 		tabSettings = "Settings",
 
@@ -177,7 +191,7 @@ local I18N = {
 		noClipDesc = "Walk through walls",
 		secFlight = "Flight",
 		fly = "Fly",
-		flyDesc = "Space/E up, Q/Ctrl down",
+		flyDesc = "Space/E up, Q/Ctrl down (Detects Place 16/17)",
 		flyNoChar = "Fly: no character found",
 		flySpeed = "Fly Speed",
 		secCharacter = "Character",
@@ -216,6 +230,18 @@ local I18N = {
 		tagSheriff = " [SHERIFF]",
 		flingSelected = "Fling Selected Player",
 
+		secSubWar = "Underground War 🗡️",
+		subWarStatus = "Game Status: %s",
+		subWarDetected = "Detected Place %d (Underground Mode Ready)",
+		subWarOtherPlace = "Current Place: %d (Manual mode also available)",
+		underGroundMode = "Go Underground",
+		underGroundDesc = "Go beneath the ground; you see yourself and dodge normal attacks",
+		underDepth = "Underground Depth",
+		appearBtn = "Appear",
+		subWarEnterToast = "Went underground (you remain visible to yourself)",
+		subWarAppearToast = "Reappeared on the surface",
+		subWarFlyAutoToast = "Place %d detected: Underground fly active",
+
 		flingBusy = "A fling is already in progress",
 		flingInvalidTarget = "Select a valid player",
 		flingNoTargetChar = "Target has no active character",
@@ -245,7 +271,7 @@ local I18N = {
 		rejoin = "Rejoin Server",
 		rejoiningToast = "Rejoining...",
 		unload = "Unload KingOS",
-		secLanguage = "Language / Idioma",
+		secLanguage = "Idioma / Language",
 		langEsBtn = "Español",
 		langEnBtn = "English",
 		langChangedEs = "Idioma cambiado a Español",
@@ -254,7 +280,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.22.1 Beta: Beta build update and general stability adjustments.\n• v2.22.0: All-direction fling with full-axis high-speed spin for Murder, Sheriff, and selected players.\n• v2.22: Spanish / English language buttons in Settings and UI translation.",
+		versionNotesText = "• v2.22.1 Beta: Underground War 🗡️ tab with Place 16/17 detection, self-visible underground mode, and Appear button.\n• v2.22.0: All-direction fling with full-axis high-speed spin for Murder, Sheriff, and selected players.\n• v2.22: Spanish / English language buttons in Settings and UI translation.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -425,7 +451,13 @@ local S = {
 	espMurder = false,
 	espSheriff = false,
 	espInnocent = false,
+	underGround = false,
+	underDepth = 14,
 }
+
+local function isTargetPlace16Or17()
+	return game.PlaceId == 16 or game.PlaceId == 17
+end
 
 local function getHum()
 	local c = player.Character
@@ -525,8 +557,110 @@ local function restoreNoclip()
 	table.clear(noclipChanged)
 end
 
+-- ====================== GUERRA SUBTERRANEA LOGIC ======================
+local underGroundToggleApi = nil
+local savedSurfacePos = nil
+local underAnchorY = nil
+local underBV, underBG
+local selfTranspSaved = setmetatable({}, { __mode = "k" })
+
+local function applySelfVisibleInvisibility(active)
+	local c = player.Character
+	if not c then return end
+	if active then
+		for _, v in ipairs(c:GetDescendants()) do
+			if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
+				if selfTranspSaved[v] == nil then
+					selfTranspSaved[v] = v.LocalTransparencyModifier
+				end
+				-- Tú sigues viéndote a ti mismo (LocalTransparencyModifier bajo)
+				v.LocalTransparencyModifier = 0.35
+			end
+		end
+	else
+		for part, prevMod in pairs(selfTranspSaved) do
+			if part and part.Parent then
+				part.LocalTransparencyModifier = prevMod
+			end
+		end
+		table.clear(selfTranspSaved)
+	end
+end
+
+local function stopUndergroundMovement()
+	if underBV then underBV:Destroy() underBV = nil end
+	if underBG then underBG:Destroy() underBG = nil end
+	underAnchorY = nil
+end
+
+local function enterUnderground()
+	local root, hum = getRoot(), getHum()
+	if not root or not hum then
+		notify(L("flyNoChar"))
+		return false
+	end
+
+	if not savedSurfacePos then
+		savedSurfacePos = root.Position
+	end
+
+	local rayParams = RaycastParams.new()
+	rayParams.FilterType = Enum.RaycastFilterType.Exclude
+	rayParams.FilterDescendantsInstances = { player.Character }
+	local rayOrigin = root.Position + Vector3.new(0, 4, 0)
+	local rayResult = Workspace:Raycast(rayOrigin, Vector3.new(0, -120, 0), rayParams)
+	local groundY = rayResult and rayResult.Position.Y or root.Position.Y
+	underAnchorY = groundY - math.max(6, S.underDepth)
+
+	stopUndergroundMovement()
+	underBV = new("BodyVelocity", {
+		MaxForce = Vector3.new(1e9, 1e9, 1e9),
+		Velocity = Vector3.zero,
+	}, root)
+	underBG = new("BodyGyro", {
+		MaxTorque = Vector3.new(1e9, 1e9, 1e9),
+		P = 9e4,
+		CFrame = root.CFrame,
+	}, root)
+
+	hum.PlatformStand = false
+	root.CFrame = CFrame.new(root.Position.X, underAnchorY, root.Position.Z) * (root.CFrame - root.CFrame.Position)
+	applySelfVisibleInvisibility(true)
+	return true
+end
+
+local function appearFromUnderground(silent)
+	S.underGround = false
+	stopUndergroundMovement()
+	applySelfVisibleInvisibility(false)
+
+	local root, hum = getRoot(), getHum()
+	if root and hum then
+		hum.PlatformStand = false
+		local targetPos = savedSurfacePos
+		if not targetPos then
+			local rayParams = RaycastParams.new()
+			rayParams.FilterType = Enum.RaycastFilterType.Exclude
+			rayParams.FilterDescendantsInstances = { player.Character }
+			local hit = Workspace:Raycast(root.Position + Vector3.new(0, 40, 0), Vector3.new(0, -120, 0), rayParams)
+			targetPos = hit and (hit.Position + Vector3.new(0, 3.5, 0)) or (root.Position + Vector3.new(0, S.underDepth + 3, 0))
+		end
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.AssemblyAngularVelocity = Vector3.zero
+		root.CFrame = CFrame.new(targetPos.X, targetPos.Y + 1.5, targetPos.Z)
+	end
+	savedSurfacePos = nil
+
+	if not S.noclip then
+		restoreNoclip()
+	end
+	if not silent then
+		notify(L("subWarAppearToast"))
+	end
+end
+
 track(RunService.Stepped:Connect(function()
-	if S.noclip then
+	if S.noclip or S.underGround then
 		local c = player.Character
 		if c then
 			for _, v in ipairs(c:GetDescendants()) do
@@ -582,6 +716,44 @@ track(RunService.RenderStepped:Connect(function()
 
 	if S.fov and cam then
 		cam.FieldOfView = S.fov
+	end
+
+	if S.underGround then
+		local root = getRoot()
+		if root and cam then
+			if not underBV or not underBV.Parent then
+				enterUnderground()
+			end
+			local moveVec = Vector3.zero
+			local hum = getHum()
+			if hum and hum.MoveDirection.Magnitude > 0 then
+				local flatLook = Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
+				if flatLook.Magnitude < 1e-4 then flatLook = Vector3.new(0, 0, -1) else flatLook = flatLook.Unit end
+				local flatRight = Vector3.new(cam.CFrame.RightVector.X, 0, cam.CFrame.RightVector.Z)
+				if flatRight.Magnitude < 1e-4 then flatRight = Vector3.new(1, 0, 0) else flatRight = flatRight.Unit end
+				local rel = cam.CFrame:VectorToObjectSpace(hum.MoveDirection)
+				moveVec = flatLook * (-rel.Z) + flatRight * rel.X
+				if moveVec.Magnitude > 0 then
+					moveVec = moveVec.Unit * math.max(24, S.speedOn and S.speed or 28)
+				end
+			end
+
+			if underAnchorY then
+				local errY = underAnchorY - root.Position.Y
+				local yVel = math.clamp(errY * 14, -40, 40)
+				if underBV and underBV.Parent then
+					underBV.Velocity = Vector3.new(moveVec.X, yVel, moveVec.Z)
+				end
+				if underBG and underBG.Parent then
+					local lookDir = cam.CFrame.LookVector
+					local flatDir = Vector3.new(lookDir.X, 0, lookDir.Z)
+					if flatDir.Magnitude > 1e-4 then
+						underBG.CFrame = CFrame.lookAt(root.Position, root.Position + flatDir.Unit)
+					end
+				end
+			end
+			applySelfVisibleInvisibility(true)
+		end
 	end
 
 	if not S.fly then return end
@@ -1058,7 +1230,7 @@ local body = new("Frame", {
 }, main)
 
 local sidebar = new("ScrollingFrame", {
-	Size = UDim2.new(0, 86, 1, -16),
+	Size = UDim2.new(0, 96, 1, -16),
 	Position = UDim2.new(0, 8, 0, 8),
 	BackgroundTransparency = 1,
 	BorderSizePixel = 0,
@@ -1132,8 +1304,8 @@ end
 
 local function createPage(name, icon, labelKey)
 	local p = new("ScrollingFrame", {
-		Size = UDim2.new(1, -114, 1, -16),
-		Position = UDim2.new(0, 106, 0, 8),
+		Size = UDim2.new(1, -124, 1, -16),
+		Position = UDim2.new(0, 114, 0, 8),
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		ScrollBarThickness = 3,
@@ -1147,27 +1319,28 @@ local function createPage(name, icon, labelKey)
 	bind(function() p.ScrollBarImageColor3 = T.accent end)
 
 	local b = new("TextButton", {
-		Size = UDim2.new(1, 0, 0, 48),
+		Size = UDim2.new(1, 0, 0, 50),
 		Text = "",
 		AutoButtonColor = false,
 		LayoutOrder = nextOrder(),
 	}, sidebar)
 	corner(b, 10)
 	local ic = new("TextLabel", {
-		Size = UDim2.new(1, 0, 0, 24),
+		Size = UDim2.new(1, 0, 0, 22),
 		Position = UDim2.new(0, 0, 0, 4),
 		BackgroundTransparency = 1,
 		Text = icon,
 		Font = Enum.Font.GothamBold,
-		TextSize = 18,
+		TextSize = 17,
 	}, b)
 	local nm = new("TextLabel", {
-		Size = UDim2.new(1, 0, 0, 16),
-		Position = UDim2.new(0, 0, 0, 28),
+		Size = UDim2.new(1, -4, 0, 20),
+		Position = UDim2.new(0, 2, 0, 26),
 		BackgroundTransparency = 1,
 		Text = L(labelKey),
 		Font = Enum.Font.GothamMedium,
-		TextSize = 12,
+		TextSize = 10,
+		TextWrapped = true,
 	}, b)
 	b.MouseButton1Click:Connect(function() showPage(name) end)
 	bind(function()
@@ -1289,6 +1462,10 @@ local function addToggle(page, textKey, descKey, default, callback)
 		state = v
 		render(true)
 		callback(v)
+	end
+	function api.sync(v)
+		state = v
+		render(true)
 	end
 	pill.MouseButton1Click:Connect(function()
 		api.set(not state)
@@ -1417,6 +1594,7 @@ end
 local playerPage = createPage("Player", "👤", "tabPlayer")
 local worldPage = createPage("World", "🌍", "tabWorld")
 local mm2Page = createPage("MM2", "🔪", "tabMM2")
+local subWarPage = createPage("SubWar", "🗡️", "tabSubWar")
 local themesPage = createPage("Themes", "🎨", "tabThemes")
 local settingsPage = createPage("Settings", "⚙", "tabSettings")
 
@@ -1443,7 +1621,7 @@ addSlider(playerPage, "jumpPower", 1, 300, S.jump, function(v) S.jump = v end)
 addToggle(playerPage, "infJump", "infJumpDesc", false, function(v) S.infJump = v end)
 addToggle(playerPage, "noClip", "noClipDesc", false, function(v)
 	S.noclip = v
-	if not v then restoreNoclip() end
+	if not v and not S.underGround then restoreNoclip() end
 end)
 
 addSection(playerPage, "secFlight")
@@ -1451,7 +1629,14 @@ local flyPad
 addToggle(playerPage, "fly", "flyDesc", false, function(v)
 	S.fly = v
 	if v then
-		if not startFly() then
+		if isTargetPlace16Or17() then
+			S.underGround = true
+			if underGroundToggleApi and underGroundToggleApi.sync then
+				underGroundToggleApi.sync(true)
+			end
+			enterUnderground()
+			notify(L("subWarFlyAutoToast", game.PlaceId))
+		elseif not startFly() then
 			notify(L("flyNoChar"))
 		end
 	else
@@ -1631,6 +1816,62 @@ task.spawn(function()
 		refreshPlayerListUI()
 		task.wait(1)
 	end
+end)
+
+-- ---- Guerra Subterranea ----
+addSection(subWarPage, "secSubWar")
+local statusRow = row(subWarPage, 40)
+local statusLbl = new("TextLabel", {
+	Size = UDim2.new(1, -24, 1, 0),
+	Position = UDim2.new(0, 12, 0, 0),
+	BackgroundTransparency = 1,
+	Text = "",
+	Font = Enum.Font.GothamBold,
+	TextSize = 12,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Left,
+}, statusRow)
+bind(function()
+	statusLbl.TextColor3 = isTargetPlace16Or17() and T.accent or T.gray
+	local detail = isTargetPlace16Or17()
+		and L("subWarDetected", game.PlaceId)
+		or L("subWarOtherPlace", game.PlaceId)
+	statusLbl.Text = L("subWarStatus", detail)
+end)
+
+underGroundToggleApi = addToggle(subWarPage, "underGroundMode", "underGroundDesc", false, function(v)
+	if v then
+		S.underGround = true
+		if enterUnderground() then
+			notify(L("subWarEnterToast"))
+		else
+			S.underGround = false
+			if underGroundToggleApi and underGroundToggleApi.sync then
+				underGroundToggleApi.sync(false)
+			end
+		end
+	else
+		appearFromUnderground(false)
+	end
+end)
+
+addSlider(subWarPage, "underDepth", 6, 40, S.underDepth, function(v)
+	S.underDepth = v
+	if S.underGround and getRoot() then
+		local rayParams = RaycastParams.new()
+		rayParams.FilterType = Enum.RaycastFilterType.Exclude
+		rayParams.FilterDescendantsInstances = { player.Character }
+		local hit = Workspace:Raycast(getRoot().Position + Vector3.new(0, 40, 0), Vector3.new(0, -140, 0), rayParams)
+		local gY = hit and hit.Position.Y or (savedSurfacePos and savedSurfacePos.Y or getRoot().Position.Y)
+		underAnchorY = gY - v
+	end
+end)
+
+addButton(subWarPage, "appearBtn", function()
+	if underGroundToggleApi and underGroundToggleApi.sync then
+		underGroundToggleApi.sync(false)
+	end
+	appearFromUnderground(false)
 end)
 
 -- ---- Themes ----
@@ -1965,6 +2206,10 @@ end))
 
 -- ====================== UNLOAD ======================
 unload = function()
+	S.underGround = false
+	stopUndergroundMovement()
+	applySelfVisibleInvisibility(false)
+	savedSurfacePos = nil
 	S.fly = false
 	stopFly()
 	S.noclip = false
