@@ -4,6 +4,11 @@
 
 	Tabs: Player, World, MM2, Themes, Settings
 	Hide/show the panel: RightShift or the round "K" button
+
+	Velocity Bypass applied:
+	- Speed Boost & Vel Edit force WalkSpeed = 16 every frame
+	- Actual movement is done only through AssemblyLinearVelocity
+	- Game only ever sees normal walk speed
 ]]
 
 local env = (getgenv and getgenv()) or _G
@@ -60,10 +65,10 @@ local I18N = {
 
 		secMovement = "Movimiento",
 		speedBoost = "Speed Boost",
-		speedBoostDesc = "Sobrescribe la velocidad al caminar",
+		speedBoostDesc = "Sobrescribe la velocidad al caminar (bypass)",
 		walkSpeed = "Walk Speed",
 		velEditToggle = "Edit de Vel",
-		velEditDesc = "Edita y mantiene tu velocidad (Vel) activa",
+		velEditDesc = "Edita y mantiene tu velocidad (Vel) activa (bypass)",
 		velSpeedSlider = "Vel Speed",
 		highJump = "High Jump",
 		highJumpDesc = "Sobrescribe la fuerza de salto",
@@ -166,7 +171,7 @@ local I18N = {
 		secAbout = "Acerca de y Versiones",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nToca el botón K para ocultar o abrir el panel. Puedes arrastrar el encabezado y el botón K.",
 		secVersionNotes = "Qué se Añade en las Versiones",
-		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios.\n• vPro3: Auto Collect Gun automático con auto-desactivado al recoger la pistola.",
+		versionNotesText = "• v2.20: Base inicial de KingOS con fling multi-dirección y módulos principales.\n• v2.22.2: Desplazamiento más fluido y mejoras de estabilidad en Fly.\n• PRO 2 (2.23): FLING spin con velocidad extrema y nuevas opciones en Player, World y MM2.\n• PRO (2.33): Detección de Murder/Sheriff, botón Abrir lista de fling y botón Invisibilidad.\n• DeLuX Pro (2.32): Fix del descenso en Fly, Gravedad Baja (15), Reiniciar Cámara, Copiar Murder/Sheriff, Edit de Vel y contador de usuarios.\n• vPro3: Auto Collect Gun automático con auto-desactivado al recoger la pistola.\n• Velocity Bypass: Speed/Vel fuerzan WalkSpeed=16 y solo usan AssemblyLinearVelocity.",
 
 		hiddenToast = "Oculto. Toca el botón K para abrir",
 		loadStarting = "Iniciando...",
@@ -188,10 +193,10 @@ local I18N = {
 
 		secMovement = "Movement",
 		speedBoost = "Speed Boost",
-		speedBoostDesc = "Override walk speed",
+		speedBoostDesc = "Override walk speed (velocity bypass)",
 		walkSpeed = "Walk Speed",
 		velEditToggle = "Vel Edit",
-		velEditDesc = "Edit and lock your velocity speed (Vel)",
+		velEditDesc = "Edit and lock your velocity speed (Vel) - bypass",
 		velSpeedSlider = "Vel Speed",
 		highJump = "High Jump",
 		highJumpDesc = "Override jump power",
@@ -294,7 +299,7 @@ local I18N = {
 		secAbout = "About & Versions",
 		aboutBody = "KingOS Universal Pro\nOWN GAME BY KING OS\n\nTap the K button to hide or open the panel. You can drag the header and the K button.",
 		secVersionNotes = "What's Added in Versions",
-		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and user count.\n• vPro3: Automatic Gun Collect with auto-disable once picked up.",
+		versionNotesText = "• v2.20: Initial KingOS base with multi-angle fling and core modules.\n• v2.22.2: Smoother movement and steadier Fly.\n• PRO 2 (2.23): FLING spin with extreme spin velocity and added Player, World and MM2 options.\n• PRO (2.33): Murder/Sheriff detection, Open Fling List button, and Invisibility button.\n• DeLuX Pro (2.32): Fly drop fix, Low Gravity (15), Reset Camera, Copy Murder/Sheriff, Vel Edit, and user count.\n• vPro3: Automatic Gun Collect with auto-disable once picked up.\n• Velocity Bypass: Speed/Vel force WalkSpeed=16 and only use AssemblyLinearVelocity.",
 
 		hiddenToast = "Hidden. Tap the K button to open",
 		loadStarting = "Starting...",
@@ -653,7 +658,6 @@ local function restoreNoclip()
 	table.clear(noclipChanged)
 end
 
--- Air Walk invisible platform
 local airPart = new("Part", {
 	Name = "KingOS_AirWalk",
 	Size = Vector3.new(6, 0.6, 6),
@@ -672,7 +676,6 @@ local function updateAirWalk()
 	end
 end
 
--- FLING spin: giro suave y controlado
 local FLING_SPIN_MULT = 0.35
 local flingSpinBav = nil
 local flingSpinRoot = nil
@@ -787,7 +790,6 @@ track(RunService.RenderStepped:Connect(function(dt)
 		cam.FieldOfView = S.fov
 	end
 
-	-- Vuelo anclado: cero caída rápida ni deslizamiento al estar quieto
 	if S.fly then
 		local root, hum = getRoot(), getHum()
 		if not (root and hum and cam) then return end
@@ -822,8 +824,10 @@ track(RunService.RenderStepped:Connect(function(dt)
 	end
 end))
 
+-- ====================== VELOCITY BYPASS (CORE) ======================
 track(RunService.Heartbeat:Connect(function()
 	local hum, root = getHum(), getRoot()
+
 	if S.fly and hum and root then
 		hum.PlatformStand = true
 		root.Anchored = true
@@ -832,21 +836,29 @@ track(RunService.Heartbeat:Connect(function()
 	end
 
 	if hum then
+		-- FORCE WalkSpeed back to original every frame
+		-- The game / server only ever sees 16
+		hum.WalkSpeed = origWalk
+
+		-- Apply desired speed purely through velocity
+		local targetSpeed = nil
 		if S.velEditOn then
-			hum.WalkSpeed = S.velSpeed
-			if root and not S.fly and hum.MoveDirection.Magnitude > 0 then
-				local flatDir = Vector3.new(hum.MoveDirection.X, 0, hum.MoveDirection.Z)
-				if flatDir.Magnitude > 0 then
-					root.AssemblyLinearVelocity = Vector3.new(
-						flatDir.Unit.X * S.velSpeed,
-						root.AssemblyLinearVelocity.Y,
-						flatDir.Unit.Z * S.velSpeed
-					)
-				end
-			end
+			targetSpeed = S.velSpeed
 		elseif S.speedOn then
-			hum.WalkSpeed = S.speed
+			targetSpeed = S.speed
 		end
+
+		if targetSpeed and root and not S.fly and hum.MoveDirection.Magnitude > 0 then
+			local flatDir = Vector3.new(hum.MoveDirection.X, 0, hum.MoveDirection.Z)
+			if flatDir.Magnitude > 0 then
+				root.AssemblyLinearVelocity = Vector3.new(
+					flatDir.Unit.X * targetSpeed,
+					root.AssemblyLinearVelocity.Y,
+					flatDir.Unit.Z * targetSpeed
+				)
+			end
+		end
+
 		if S.jumpOn then
 			hum.UseJumpPower = true
 			hum.JumpPower = S.jump
@@ -862,6 +874,7 @@ track(RunService.Heartbeat:Connect(function()
 			hum.Sit = true
 		end
 	end
+
 	if S.fullbright then
 		Lighting.Brightness = 2
 		Lighting.Ambient = Color3.fromRGB(190, 190, 190)
@@ -1108,7 +1121,6 @@ bind(function()
 	end
 end)
 
--- Header
 local topBar = new("Frame", { Size = UDim2.new(1, 0, 0, HEADER_H), BorderSizePixel = 0 }, main)
 local topGrad = new("UIGradient", {}, topBar)
 bind(function()
@@ -1208,7 +1220,6 @@ local headLine = new("Frame", {
 }, main)
 bind(function() headLine.BackgroundColor3 = T.bg3 end)
 
--- Body
 local body = new("Frame", {
 	Size = UDim2.new(1, 0, 1, -(HEADER_H + FOOTER_H)),
 	Position = UDim2.new(0, 0, 0, HEADER_H + 1),
@@ -1226,7 +1237,6 @@ local sidebar = new("ScrollingFrame", {
 }, body)
 new("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }, sidebar)
 
--- Footer
 local footLine = new("Frame", {
 	Size = UDim2.new(1, 0, 0, 1),
 	Position = UDim2.new(0, 0, 1, -FOOTER_H),
@@ -1587,33 +1597,20 @@ local settingsPage = createPage("Settings", "⚙", "tabSettings")
 addSection(playerPage, "secMovement")
 addToggle(playerPage, "speedBoost", "speedBoostDesc", false, function(v)
 	S.speedOn = v
-	if not v and not S.velEditOn then
-		local hum = getHum()
-		if hum then hum.WalkSpeed = origWalk end
-	end
 end)
 addSlider(playerPage, "walkSpeed", 1, 300, S.speed, function(v) S.speed = v end)
 
 addToggle(playerPage, "velEditToggle", "velEditDesc", false, function(v)
 	S.velEditOn = v
-	local hum, root = getHum(), getRoot()
-	if v then
-		if hum then hum.WalkSpeed = S.velSpeed end
-	else
+	if not v then
+		local root = getRoot()
 		if root and root.Parent then
 			root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
-		end
-		if hum then
-			hum.WalkSpeed = S.speedOn and S.speed or origWalk
 		end
 	end
 end)
 addSlider(playerPage, "velSpeedSlider", 1, 300, S.velSpeed, function(v)
 	S.velSpeed = v
-	if S.velEditOn then
-		local hum = getHum()
-		if hum then hum.WalkSpeed = v end
-	end
 end)
 
 addToggle(playerPage, "highJump", "highJumpDesc", false, function(v)
@@ -2208,7 +2205,6 @@ track(UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end))
 
--- Dragging
 local dragging, dragStart, startPos = false, nil, nil
 topBar.InputBegan:Connect(function(input)
 	if isPointer(input) then
@@ -2243,6 +2239,7 @@ unload = function()
 	S.fly = false
 	stopFly()
 	S.velEditOn = false
+	S.speedOn = false
 	S.autoCollectGun = false
 	S.noclip = false
 	S.airWalk = false
@@ -2357,4 +2354,4 @@ task.spawn(function()
 	notify(L("loadedToast", VERSION))
 end)
 
-print("✅ KingOS Universal Pro " .. VERSION .. " loaded")
+print("✅ KingOS Universal Pro " .. VERSION .. " + Velocity Bypass loaded")
